@@ -85,6 +85,7 @@ public class Tele extends LinearOpMode {
     private DcMotor rightBack = null;
     private DcMotor leftBack = null;
     private DcMotorEx outtake1 = null;
+    private DcMotorEx outtake2 = null;
     private DcMotor intake1 = null;
     double intakePower = 0.0;
     private Servo blockerR;
@@ -118,6 +119,7 @@ public class Tele extends LinearOpMode {
     NormalizedRGBA r_backColor;
     NormalizedRGBA l_frontColor;
     NormalizedRGBA l_backColor;
+    /*
     boolean r_frontHasBall = false;
     boolean r_frontGreen = false;
 
@@ -128,13 +130,19 @@ public class Tele extends LinearOpMode {
     boolean r_backGreen = false;
 
     boolean l_backHasBall = false;
-    boolean l_backGreen = false;
+    boolean l_backGreen = false;*/
+    int r_frontHasBall = 0;
+    int l_frontHasBall = 0;
+    int r_backHasBall = 0;
+    int l_backHasBall = 0;
+    String pattern = "";
+
 
     double r_frontDistance = 0.0;
     double l_frontDistance = 0.0;
     double r_backDistance = 0.0;
     double l_backDistance = 0.0;
-
+    int waitTime = 250;
     private Servo pivot;
 
     @Override
@@ -159,7 +167,11 @@ public class Tele extends LinearOpMode {
         // Wait for the game to start (driver presses START)
         float step = 0.001f;
         double outtakeStep = 7.0;
-
+        boolean rightBlockerEngaged = false;
+        boolean leftBlockerEngaged = false;
+        ElapsedTime rightBlockerTimer = new ElapsedTime();
+        ElapsedTime leftBlockerTimer = new ElapsedTime();
+        ElapsedTime patternTimer = new ElapsedTime();
 
 
         waitForStart();
@@ -204,8 +216,10 @@ public class Tele extends LinearOpMode {
             //controls
             if(gamepad2.left_bumper) {
                 outtake1.setVelocity(FAR_OUTTAKE_VELOCITY);
+                outtake2.setVelocity(FAR_OUTTAKE_VELOCITY);
             } else if(gamepad2.right_bumper) {
                 outtake1.setVelocity(CLOSE_OUTTAKE_VELOCITY);
+                outtake2.setVelocity(CLOSE_OUTTAKE_VELOCITY);
             } else if (gamepad1.x) {
                 pivotPosition = ACTUAL_PIVOT_POSITION;
                 pivotPosition = Range.clip(pivotPosition, 0.0, 1.0);
@@ -214,42 +228,101 @@ public class Tele extends LinearOpMode {
                 pivotPosition = FAR_PIVOT_POSITION;
                 pivotPosition = Range.clip(pivotPosition, 0.0, 1.0);
                 pivot.setPosition(pivotPosition);
-            } else if (gamepad2.y) {
+            }
+            /*else if (gamepad2.y) {
                 blockerPositionR = R_BLOCKER_DOWN;
                 blockerR.setPosition(Range.clip(blockerPositionR, 0.0 , R_BLOCKER_UP));
-            } else if(gamepad1.dpad_left){
+            }*/ else if(gamepad1.dpad_left){
                 intakePower = -INTAKE_POWER;
             } else if (gamepad2.dpad_right) {
                 outtake1.setVelocity(0.0);
-            } else if (gamepad2.a){
+                outtake2.setVelocity(0.0);
+            } else if (gamepad2.b){
                 blockerPositionR = R_BLOCKER_UP;
                 blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
+                if (!rightBlockerEngaged) {
+                    rightBlockerEngaged = true;
+                    rightBlockerTimer.reset();
+                }
             } else if (gamepad2.x) {
                 blockerPositionL = L_BLOCKER_UP;
                 blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
-            } else if (gamepad2.b){
+                if (!leftBlockerEngaged) {
+                    leftBlockerEngaged = true;
+                    leftBlockerTimer.reset();
+                }
+            } else if (gamepad2.a) {
+                blockerPositionL = L_BLOCKER_UP;
+                blockerPositionR = R_BLOCKER_UP;
+                blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
+                blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
+                if (!leftBlockerEngaged) {
+                    leftBlockerEngaged = true;
+                    leftBlockerTimer.reset();
+                }
+                if (!rightBlockerEngaged) {
+                    rightBlockerEngaged = true;
+                    rightBlockerTimer.reset();
+                }
+            }
+            /*else if (gamepad2.b){
                 blockerPositionL = L_BLOCKER_DOWN;
                 blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
-            } else if (gamepad1.right_bumper) {
+            } */
+            else if (gamepad1.right_bumper) {
                 intakePower = INTAKE_POWER;
             } else if (gamepad1.left_bumper){
                 intakePower = INTAKE_ZERO_POWER;
             } else if (gamepad2.dpad_up){
-                targetOuttakeVelocity = targetOuttakeVelocity + step;
-                outtake1.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
+//                targetOuttakeVelocity = targetOuttakeVelocity + step;
+//                outtake1.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
             }else if (gamepad2.dpad_down){
-                targetOuttakeVelocity = targetOuttakeVelocity - step;
-                outtake1.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
+//                targetOuttakeVelocity = targetOuttakeVelocity - step;
+//                outtake1.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
             }
+
+
+            if (leftBlockerEngaged){
+                if (leftBlockerTimer.milliseconds() > waitTime){
+                    blockerPositionL = L_BLOCKER_DOWN;
+                    blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
+                    leftBlockerEngaged = false;
+                }
+            }
+            if (rightBlockerEngaged){
+                if (rightBlockerTimer.milliseconds() > waitTime){
+                    blockerPositionR = R_BLOCKER_DOWN;
+                    blockerR.setPosition(Range.clip(blockerPositionR, 0.0 , R_BLOCKER_UP));
+                    rightBlockerEngaged = false;
+                }
+            }
+
+
+
 
             intake1.setPower(intakePower);
             telemetry();
 
-            checkColor(r_frontDistance,r_frontColor.red,r_frontColor.green,r_frontHasBall,r_frontGreen);
-            checkColor(r_backDistance,r_backColor.red,r_backColor.green,r_backHasBall,r_backGreen);
-            checkColor(l_frontDistance,l_frontColor.red,l_frontColor.green,l_frontHasBall,l_frontGreen);
-            checkColor(l_backDistance,l_backColor.red,l_backColor.green,l_backHasBall,l_backGreen);
-            blinkinColors(r_frontHasBall,r_backHasBall,l_frontHasBall,l_backHasBall,r_frontGreen,r_backGreen,l_frontGreen,l_backGreen);
+//            checkColor(r_frontDistance,r_frontColor.red,r_frontColor.green,r_frontHasBall,r_frontGreen);
+//            checkColor(r_backDistance,r_backColor.red,r_backColor.green,r_backHasBall,r_backGreen);
+//            checkColor(l_frontDistance,l_frontColor.red,l_frontColor.green,l_frontHasBall,l_frontGreen);
+//            checkColor(l_backDistance,l_backColor.red,l_backColor.green,l_backHasBall,l_backGreen);
+//            /*
+            r_frontHasBall = checkBallINT(r_frontDistance,r_frontHasBall);
+            r_backHasBall = checkBallINT(r_backDistance,r_backHasBall);
+            l_frontHasBall = checkBallINT(l_frontDistance,l_frontHasBall);
+            l_backHasBall = checkBallINT(l_backDistance,l_backHasBall);
+
+//            blinkinColors(r_frontHasBall,r_backHasBall,l_frontHasBall,l_backHasBall,r_frontGreen,r_backGreen,l_frontGreen,l_backGreen);
+//            telemetry.addData("r front", r_frontHasBall);
+//            telemetry.addData("r back", r_backHasBall);
+//            telemetry.addData("l front", l_frontHasBall);
+//            telemetry.addData("l back", l_backHasBall);
+            telemetry.addData("distance", r_backDistance);
+            blinkinINT(r_frontHasBall,r_backHasBall,l_frontHasBall,l_backHasBall);
+
+//            colorTelemetry(l_frontColor.red,l_frontColor.blue,l_frontColor.green,l_frontDistance);
+//            individualTest(l_frontDistance, l_frontColor.red,l_frontColor.green);
 
             telemetry.update();
             blinkin.setPattern(blinkinPattern);
@@ -258,6 +331,7 @@ public class Tele extends LinearOpMode {
     }
     public void initHardware() {
         initMotorOne(kP, kI, kD, F, position);
+        initMotorTwo(kP, kI, kD, F, position);
         initDriveMotors();
         initBlockers();
         initColorSensors();
@@ -285,6 +359,7 @@ public class Tele extends LinearOpMode {
         blockerR.setPosition(Range.clip(blockerPositionR, 0.0, 1.0));
         blockerL.setPosition(Range.clip(blockerPositionL, 0.0, 1.0));
     }
+
     private void initMotorOne(double kP, double kI, double kD, double F, double position) {
         outtake1  = hardwareMap.get(DcMotorEx.class, "outtake1");
 //        outtake1.setDirection(DcMotor.Direction.FORWARD); /// NORMAL FORWARD -- 12.1 changed
@@ -296,7 +371,18 @@ public class Tele extends LinearOpMode {
         outtake1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         outtake1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         outtake1.setVelocity(targetOuttakeVelocity);
-
+    }
+    private void initMotorTwo(double kP, double kI, double kD, double F, double position) {
+        outtake2  = hardwareMap.get(DcMotorEx.class, "outtake2");
+//        outtake1.setDirection(DcMotor.Direction.FORWARD); /// NORMAL FORWARD -- 12.1 changed
+        outtake2.setDirection(DcMotorEx.Direction.REVERSE);
+        outtake2.setPower(outtakeZeroPower);
+        outtake2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        outtake2.setVelocityPIDFCoefficients(kP, kI, kD, F);
+        outtake2.setPositionPIDFCoefficients(position);
+        outtake2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        outtake2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        outtake2.setVelocity(targetOuttakeVelocity);
     }
     private void initColorSensors() {
         // color sensor
@@ -310,17 +396,78 @@ public class Tele extends LinearOpMode {
                                boolean r_frontGreen, boolean r_backGreen, boolean l_frontGreen, boolean l_backGreen){
         if (!r_frontHasBall && !r_backHasBall && !l_frontHasBall && !l_backHasBall){
             blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.RED;
-        } else if(r_frontHasBall && r_backHasBall && l_backHasBall) {
-            if (r_frontGreen && r_backGreen){
-                blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
-            }
-        } else if((l_frontHasBall && l_backHasBall && r_backHasBall)){
-            if (!l_frontGreen && !l_backGreen){
-                blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.HOT_PINK;
-            }
+        } else if((r_frontHasBall && r_backHasBall && l_backHasBall) || (l_frontHasBall && l_backHasBall && r_backHasBall)) { // 3 balls
+            blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+        } else if((r_backHasBall && !r_frontHasBall && !l_backHasBall && !l_frontHasBall) || // rb
+                (!r_backHasBall && !r_frontHasBall && l_backHasBall && !l_frontHasBall) || // lb
+                (!r_backHasBall && r_frontHasBall && !l_backHasBall && !l_frontHasBall) || // rf
+                (!r_backHasBall && !r_frontHasBall && !l_backHasBall && l_frontHasBall)){ // lf
+            blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.BLUE;
+        } else if((r_backHasBall && r_frontHasBall && !l_backHasBall && !l_frontHasBall) ||//rf rb
+                (!r_backHasBall && !r_frontHasBall && l_backHasBall && l_frontHasBall) || // lb lf
+                (!r_backHasBall && r_frontHasBall && !l_backHasBall && l_frontHasBall) || // rf lf
+                (r_backHasBall && !r_frontHasBall && l_backHasBall && !l_frontHasBall) || // rb lb
+                (!r_backHasBall && r_frontHasBall && l_backHasBall && !l_frontHasBall) || // rf lb
+                (r_backHasBall && !r_frontHasBall && !l_backHasBall && l_frontHasBall) ){ // rb lf
+            blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.HOT_PINK;
         }
     }
 
+    public void blinkinINT(int r_frontHasBall, int r_backHasBall, int l_frontHasBall, int l_backHasBall){
+        if ((r_frontHasBall + r_backHasBall + l_frontHasBall + l_backHasBall) == 0){
+            blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.RED;
+//            pattern = "red";
+        } else if ((r_frontHasBall + r_backHasBall + l_frontHasBall + l_backHasBall) == 1) {
+//            blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.HOT_PINK;
+            blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_PARTY_PALETTE;
+//            pattern = "pink";
+        } else if ((r_frontHasBall + r_backHasBall + l_frontHasBall + l_backHasBall) == 2) {
+            blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.BLUE;
+//            pattern = "blue";
+        } else if ((r_frontHasBall + r_backHasBall + l_frontHasBall + l_backHasBall) == 3) {
+            blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+//            pattern = "green";
+        } else if ((r_frontHasBall + r_backHasBall + l_frontHasBall + l_backHasBall) == 4){
+            blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_PARTY_PALETTE;
+//            pattern = "wave_party";
+        }
+
+    }
+
+    /*private void checkColor(double distance, double red, double green, boolean hasBall, boolean isGreen){
+        if (distance < 4.0) {
+            hasBall = true;
+            if ((green / red) > 2) {
+                isGreen = true;
+            } else if ((green / red) < 2){
+                isGreen = false;
+            }
+        } else {
+            hasBall = false;
+        }
+    }*/
+
+    private boolean checkBall(double distance, boolean hasBall){
+        if (distance < 4.0) {
+            hasBall = true;
+            return hasBall;
+        } else {
+            hasBall = false;
+            return hasBall;
+        }
+
+    }
+
+    private int checkBallINT(double distance, int hasBall){
+        if (distance < 2.0) {
+            hasBall = 1;
+            return hasBall;
+        } else {
+            hasBall = 0;
+            return hasBall;
+        }
+
+    }
     private void checkColor(double distance, double red, double green, boolean hasBall, boolean isGreen){
         if (distance < 4.0) {
             hasBall = true;
@@ -363,8 +510,10 @@ public class Tele extends LinearOpMode {
         telemetry.addData("blockerPosRIGHT", "Position: " + blockerPositionR);
         telemetry.addData("Current Position", "Position: " + pivotPosition);
         telemetry.addData("Target Velocity", targetOuttakeVelocity);
-        telemetry.addData("power", outtake1.getPower());
-        telemetry.addData("Outtake Velocity", outtake1.getVelocity());
+        telemetry.addData("Outtake 1 power", outtake1.getPower());
+        telemetry.addData("Outtake 2 power", outtake2.getPower());
+        telemetry.addData("Outtake 1 Velocity", outtake1.getVelocity());
+        telemetry.addData("Outtake 2 Velocity", outtake2.getVelocity());
         telemetry.addData("F", F);
         telemetry.addData("kP", kP);
         telemetry.addData("kI", kI);
