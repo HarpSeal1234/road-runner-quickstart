@@ -58,19 +58,19 @@ public final class MecanumDrive {
         // TODO: fill in these values based on
         //   see https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html?highlight=imu#physical-hub-mounting
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
                 RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
         // drive model parameters
-        public double inPerTick = -92.0/46856; // 240.6cm and 56 ticks  131.993/92
-        public double lateralInPerTick = 0.001445262236161355; // r1 0.0013656510155808472
-        public double trackWidthTicks = -5980.75830886674; // r1 -6070.443955540504
+        public double inPerTick = 46718.6/92; // 46748 46695 46684 46755 46711 // average 46718.6
+        public double lateralInPerTick = 338.86506495971; // 337.90898966112997, 334.29730934735846, 341.4865565771669, 341.76740425320435 // lateral in per tick: 330.02530862262233, lateral in per tick: 321.3325906634474, lateral in per tick: 334.2504167257687, lateral in per tick: 335.2576332385482
+        public double trackWidthTicks = 6003.718683598427;
 
         // feedforward parameters (in tick units)
-        public double kS = 1.294362664799976; // round 1 1.3506144937641746
-        public double kV = -0.00026450457150494107; // round 1 -0.0002599469253388704
-        public double kA = 0.0000001;
+        public double kS = 1.564330823149; // kV: 0.00025759328531436, kS: 1.5390440032521249 // kV: 0.00025565429320195844, kS: 1.5626441290570496 // kV: 0.00025608991971827596, kS: 1.574899891928471 // kV: 0.00025445777264753914, kS: 1.5807352683585503
+        public double kV = 0.00025594881772053; //
+        public double kA = 0;
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50;
@@ -82,13 +82,13 @@ public final class MecanumDrive {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 0.15;
-        public double lateralGain = -0.3;
-        public double headingGain = 0.926; // shared with turn
+        public double axialGain = 0.0;
+        public double lateralGain = 0.0;
+        public double headingGain = 0.0; // shared with turn
 
-        public double axialVelGain = 0.012;
+        public double axialVelGain = 0.0;
         public double lateralVelGain = 0.0;
-        public double headingVelGain = 0.001; // shared with turn
+        public double headingVelGain = 0.0; // shared with turn
     }
 
     public static Params PARAMS = new Params();
