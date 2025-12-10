@@ -63,14 +63,14 @@ public final class MecanumDrive {
                 RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
         // drive model parameters
-        public double inPerTick = 46718.6/92; // 46748 46695 46684 46755 46711 // average 46718.6
-        public double lateralInPerTick = 338.86506495971; // 337.90898966112997, 334.29730934735846, 341.4865565771669, 341.76740425320435 // lateral in per tick: 330.02530862262233, lateral in per tick: 321.3325906634474, lateral in per tick: 334.2504167257687, lateral in per tick: 335.2576332385482
-        public double trackWidthTicks = 6003.718683598427;
+        public double inPerTick = 0.00196; // OG 92/46770.75 // 46849, 46736, 46770, 46728
+        public double lateralInPerTick = 0.0013248924399273; //0.0012809285282099868, 0.0013164556413455312, 0.0013376538315134304, 0.0013645317586401058
+        public double trackWidthTicks = 6041.201367349386; // 5994.260765404707
 
         // feedforward parameters (in tick units)
-        public double kS = 1.564330823149; // kV: 0.00025759328531436, kS: 1.5390440032521249 // kV: 0.00025565429320195844, kS: 1.5626441290570496 // kV: 0.00025608991971827596, kS: 1.574899891928471 // kV: 0.00025445777264753914, kS: 1.5807352683585503
-        public double kV = 0.00025594881772053; //
-        public double kA = 0;
+        public double kS = 1.4997059834398; // OG 1.4997059834398 // 1.6733490884404159, 1.5540436450778272, 1.3487322807682531, 1.4226989194728716
+        public double kV = 0.00025428726901472; //0.00024694812396223927, 0.0002533437698516965, 0.000257303139945750, 0.00025955404229921296
+        public double kA = 0.00001; // if too fast use kA as 0.00001
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50;
@@ -82,11 +82,11 @@ public final class MecanumDrive {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 0.0;
-        public double lateralGain = 0.0;
-        public double headingGain = 0.0; // shared with turn
+        public double axialGain = 5.0;
+        public double lateralGain = 1.1;
+        public double headingGain = 2.0; // shared with turn
 
-        public double axialVelGain = 0.0;
+        public double axialVelGain = 0.3;
         public double lateralVelGain = 0.0;
         public double headingVelGain = 0.0; // shared with turn
     }

@@ -10,9 +10,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Config
-@Autonomous(name = "positive turn 60", group = "Autonomous")
+@Autonomous(name = "pos", group = "Autonomous")
 
-public class posTurn extends LinearOpMode{
+public class pos extends LinearOpMode{
     private static final boolean USE_WEBCAM = true;
     public final static int FAR_OUTTAKE_VELOCITY = 1700;
     public final static int CLOSE_OUTTAKE_VELOCITY = 1400;
@@ -33,14 +33,16 @@ public class posTurn extends LinearOpMode{
         int visionOutputPosition = 1;
 
         TrajectoryActionBuilder path1 = drive.actionBuilder(initialPose)
-                .turn(Math.toRadians(60));
+                .lineToX(1);
         waitForStart();
 
         if (isStopRequested()) return;
         Action trajectoryActionChosen;
         trajectoryActionChosen = path1.build();
-        Actions.runBlocking(new ParallelAction(trajectoryActionChosen)); // LEFT
-
+        Actions.runBlocking(new ParallelAction(trajectoryActionChosen)); // FORWARD
+        telemetry.addData("pos",drive.localizer.getPose());
+        telemetry.update();
+        sleep(90000);
     }
 
     }
