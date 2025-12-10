@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;// RR-specific imports
+package org.firstinspires.ftc.teamcode.AutoTests;// RR-specific imports
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
@@ -9,10 +9,17 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Config
-@Autonomous(name = "positive X direction", group = "Autonomous")
+import org.firstinspires.ftc.teamcode.AprilTagDetector;
+import org.firstinspires.ftc.teamcode.Avocado;
+import org.firstinspires.ftc.teamcode.Intake;
+import org.firstinspires.ftc.teamcode.Launcher;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Pivot;
 
-public class posX extends LinearOpMode{
+@Config
+@Autonomous(name = "positive turn 60", group = "Autonomous")
+
+public class posTurn extends LinearOpMode{
     private static final boolean USE_WEBCAM = true;
     public final static int FAR_OUTTAKE_VELOCITY = 1700;
     public final static int CLOSE_OUTTAKE_VELOCITY = 1400;
@@ -33,13 +40,13 @@ public class posX extends LinearOpMode{
         int visionOutputPosition = 1;
 
         TrajectoryActionBuilder path1 = drive.actionBuilder(initialPose)
-                .lineToX(20);
+                .turn(Math.toRadians(60));
         waitForStart();
 
         if (isStopRequested()) return;
         Action trajectoryActionChosen;
         trajectoryActionChosen = path1.build();
-        Actions.runBlocking(new ParallelAction(trajectoryActionChosen)); // FORWARD
+        Actions.runBlocking(new ParallelAction(trajectoryActionChosen)); // LEFT
 
     }
 

@@ -27,10 +27,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Backup;
 
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.ACTUAL_PIVOT_POSITION;
-import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.CLOSE_OUTTAKE_VELOCITY;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.DRIVE_POWER;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.FAR_OUTTAKE_VELOCITY;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.FAR_PIVOT_POSITION;
@@ -42,6 +41,7 @@ import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.PUSH_POWER;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.R_BLOCKER_DOWN;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.R_BLOCKER_UP;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -66,7 +66,7 @@ import com.qualcomm.robotcore.util.Range;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
-
+@Disabled
 @TeleOp(name="different motor", group="Linear OpMode")
 public class telenewmotor extends LinearOpMode {
 

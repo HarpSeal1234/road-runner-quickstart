@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 public class OrcaRoboticsConstants {
     // OUTTAKE
-    public final static double FAR_OUTTAKE_VELOCITY = 1400;
-    public final static double CLOSE_OUTTAKE_VELOCITY = 1100;
+    public final static int FAR_OUTTAKE_VELOCITY = 1400;
+    public final static int CLOSE_OUTTAKE_VELOCITY = 1100;
 
     // DRIVE POWER
     public final static double DRIVE_POWER = 0.7;
