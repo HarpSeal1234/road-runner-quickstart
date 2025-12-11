@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.CLOSE_OUTTAKE_VELOCITY;
+
 import androidx.annotation.NonNull;
 
 // RR-specific imports
@@ -32,8 +34,8 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 public class BlueCloseAuto extends LinearOpMode{
     private static final boolean USE_WEBCAM = true;
-    public final static int FAR_OUTTAKE_VELOCITY = 1700;
-    public final static int CLOSE_OUTTAKE_VELOCITY = 1200;
+//    public final static int FAR_OUTTAKE_VELOCITY = 1700;
+//    public final static int CLOSE_OUTTAKE_VELOCITY = 1200;
     public final static int MEDIUM_OUTTAKE_VELOCITY = 1100;
 
     public void runOpMode() {

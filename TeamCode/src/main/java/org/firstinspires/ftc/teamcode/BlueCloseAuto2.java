@@ -50,11 +50,13 @@ public class BlueCloseAuto2 extends LinearOpMode{
         if (isStopRequested()) return;
 
         Action trajectoryActionChosen1 = path1.build();
-        Actions.runBlocking(new ParallelAction(outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+200), trajectoryActionChosen1));
+        Actions.runBlocking(new ParallelAction(outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+200), trajectoryActionChosen1,aprilTagDetector.detectAprilTag()));
         int aprilTagId = aprilTagDetector.getDesiredTagId();
         telemetry.addData("April Tag Id", aprilTagId);
         telemetry.update();
-        TrajectoryActionBuilder path2 = path1.endTrajectory().fresh().turn(Math.toRadians(45));
+        TrajectoryActionBuilder path2 = path1.endTrajectory()
+                .fresh()
+                .turn(Math.toRadians(45));
 
         if (isStopRequested()) return;
 
@@ -69,8 +71,12 @@ public class BlueCloseAuto2 extends LinearOpMode{
                         intake1.intakeOn(),
                         new ParallelAction(blockerL.r_Engaged(), blockerR.l_Engaged()), // green ball #1 end // purple ball #1 start
                         new SleepAction(0.8)
-
                 )
         );
+        TrajectoryActionBuilder path3 = path2.endTrajectory()
+                .fresh()
+                .splineTo(new Vector2d(-36.0, 0.0), Math.toRadians(100))
+                .waitSeconds(0.5)
+                .splineTo(new Vector2d(-24.0, -36), Math.toRadians(48));
     }
 }
