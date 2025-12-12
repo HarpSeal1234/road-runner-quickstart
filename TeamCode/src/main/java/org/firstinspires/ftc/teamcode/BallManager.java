@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 public class BallManager {
-    private enum DecodeBallColor {
+    public enum DecodeBallColor {
         GREEN, PURPLE, NO_BALL
     }
 
