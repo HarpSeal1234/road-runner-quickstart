@@ -95,7 +95,7 @@ public class RedClosePathOnly_Actions extends LinearOpMode{
         Actions.runBlocking(
                 new SequentialAction(
                         trajectoryActionChosen3,
-                        intake1.IntakeOff(),
+                        intake1.intakeOff(),
                         trajectoryActionToShooterR1,
                         intake1.intakeOn(),
                         new SleepAction(0.2),
@@ -131,7 +131,7 @@ public class RedClosePathOnly_Actions extends LinearOpMode{
                 new SequentialAction(
                         outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+60),
                         trajectoryActionChosen4,
-                        intake1.IntakeOff(),
+                        intake1.intakeOff(),
                         trajectoryActionToShooterR2,
                         new SleepAction(0.2),
                         new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
