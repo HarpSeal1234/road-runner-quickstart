@@ -184,6 +184,13 @@ public class RedClosePathOnly_Actions extends LinearOpMode{
 
         Action trajectoryActionToShooterR2 = toShooter2.build();
 
+        TrajectoryActionBuilder leave = toShooter2.endTrajectory()
+                .fresh()
+                .lineToY(30)
+                .waitSeconds(0.5);
+
+        Action leaveAction = leave.build();
+
         Actions.runBlocking(
                 new SequentialAction(
                         outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+60),
@@ -197,7 +204,8 @@ public class RedClosePathOnly_Actions extends LinearOpMode{
                         new SleepAction(0.5),
                         new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
                         new SleepAction(0.8),
-                        new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()) // purple ball #1 end
+                        new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()), // purple ball #1 end
+                        leaveAction
                 )
         );
 

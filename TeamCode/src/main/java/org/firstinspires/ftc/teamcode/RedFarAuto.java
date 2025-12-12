@@ -18,8 +18,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Config
-@Autonomous(name = "Blue Far Auto", group = "Autonomous")
-public class BlueFarAuto extends LinearOpMode {
+@Autonomous(name = "Red Far Auto", group = "Autonomous")
+public class RedFarAuto extends LinearOpMode {
     private static final boolean USE_WEBCAM = true;
 
     public MecanumDrive drive;
@@ -43,38 +43,38 @@ public class BlueFarAuto extends LinearOpMode {
 
         TrajectoryActionBuilder path1 = drive.actionBuilder(initialPose)
                 .setTangent(0.0)
-                .splineToLinearHeading(new Pose2d(new Vector2d(10.0, -2), Math.toRadians(19.0)), Math.toRadians(0.0))
-                .waitSeconds(0.5);
+                .splineToLinearHeading(new Pose2d(new Vector2d(10.0, 2), Math.toRadians(-19.0)), Math.toRadians(0.0))
+                .waitSeconds(0.3);
         Action trajectoryActionChosen1 = path1.build();
         pivot.farPivot();
 
         TrajectoryActionBuilder path2 = path1.endTrajectory()
                 .fresh()
                 .setTangent(0.0)
-                .splineToLinearHeading(new Pose2d(new Vector2d(23, 20), Math.toRadians(60)), Math.toRadians(0.0))
+                .splineToLinearHeading(new Pose2d(new Vector2d(23, -19.5), Math.toRadians(-70)), Math.toRadians(0.0))
                 .waitSeconds(0.5)
-                .lineToY(30, new TranslationalVelConstraint(17.0))
+                .lineToY(-30, new TranslationalVelConstraint(17.0))
                 .waitSeconds(0.5);
         Action trajectoryActionChosen2 = path2.build();
 
         TrajectoryActionBuilder toShooterP1 = path2.endTrajectory()
                 .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(9.5, 1.5), Math.toRadians(25)), Math.toRadians(0.0))
+                .splineToLinearHeading(new Pose2d(new Vector2d(9.5, -1.5), Math.toRadians(-25)), Math.toRadians(0.0))
                 .waitSeconds(0.5);
         Action toShooterA1 = toShooterP1.build();
 
         TrajectoryActionBuilder path3 = toShooterP1.endTrajectory()
                 .fresh()
                 .setTangent(0.0)
-                .splineToLinearHeading(new Pose2d(new Vector2d(19, 23), Math.toRadians(125)), Math.toRadians(0.0))
+                .splineToLinearHeading(new Pose2d(new Vector2d(19, -23), Math.toRadians(-125)), Math.toRadians(0.0))
                 .waitSeconds(0.5)
-                .lineToY(35, new TranslationalVelConstraint(17.0))
+                .lineToY(-35, new TranslationalVelConstraint(17.0))
                 .waitSeconds(0.5);
         Action trajectoryActionChosen3 = path3.build();
 
         TrajectoryActionBuilder toShooterP2 = path3.endTrajectory()
                 .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(10, 1.5), Math.toRadians(28)), Math.toRadians(0.0))
+                .splineToLinearHeading(new Pose2d(new Vector2d(10, -1.5), Math.toRadians(-28)), Math.toRadians(0.0))
                 .waitSeconds(0.5);
         Action toShooterA2 = toShooterP2.build();
 
@@ -98,7 +98,7 @@ public class BlueFarAuto extends LinearOpMode {
                             blocker.r_Engaged(),
                             new SleepAction(0.3),
                             blocker.r_Disengaged(),
-                            new SleepAction(1)
+                            new SleepAction(0.7)
                     )
             );
 
@@ -115,7 +115,7 @@ public class BlueFarAuto extends LinearOpMode {
                             new ParallelAction(blocker.r_Engaged(), blocker.l_Disengaged()),
                             new SleepAction(0.3),
                             blocker.r_Disengaged(),
-                            new SleepAction(1)
+                            new SleepAction(0.7)
                     )
             );
         } else { //PPG
@@ -129,11 +129,12 @@ public class BlueFarAuto extends LinearOpMode {
                             intake1.intakeOn(),
                             new SleepAction(0.5),
                             blocker.r_Engaged(),
-                            new SleepAction(0.2),
+                            new SleepAction(0.4),
+                            outtake1.startLauncher(FAR_OUTTAKE_VELOCITY + 180),
                             new ParallelAction(blocker.l_Engaged(), blocker.r_Disengaged()),
                             new SleepAction(0.3),
                             blocker.l_Disengaged(),
-                            new SleepAction(1)
+                            new SleepAction(0.7)
                     )
             );
         }

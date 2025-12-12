@@ -32,6 +32,17 @@ public class AprilTagDetector {
         visionPortal = builder.build();
     }
 
+    public int fetchAprilTag(){
+        while (true) {
+            List<AprilTagDetection> currentDetections = aprilTagProcessor.getDetections();
+            if (!currentDetections.isEmpty()) {
+                desiredTagId = currentDetections.get(0).id;
+                visionPortal.stopStreaming();
+                return desiredTagId;
+            }
+        }
+    }
+
     public class DetectAprilTag implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
