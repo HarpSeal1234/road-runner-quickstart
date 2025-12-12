@@ -40,28 +40,88 @@ public class RedClosePathOnly_Actions extends LinearOpMode{
 
         int visionOutputPosition = 1;
 
+        waitForStart();
+        if (isStopRequested()) return;
+
         TrajectoryActionBuilder path1 = drive.actionBuilder(initialPose)
                 .setTangent(0.0)
                 .splineToConstantHeading(new Vector2d(-24, 36), 0)
                 .waitSeconds(0.5);
         pivot.closePivot();
-//        reportPosition();
-
-        waitForStart();
-        if (isStopRequested()) return;
-
         Action trajectoryActionChosen1 = path1.build();
+
         Actions.runBlocking(new ParallelAction(outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+200), trajectoryActionChosen1,aprilTagDetector.detectAprilTag()));
         int aprilTagId = aprilTagDetector.getDesiredTagId();
         telemetry.addData("April Tag Id", aprilTagId);
         telemetry.update();
+
         TrajectoryActionBuilder path2 = path1.endTrajectory()
                 .fresh()
                 .turn(Math.toRadians(-45));
+        Action trajectoryActionChosen2 = path2.build();
 
         if (isStopRequested()) return;
 
-        Action trajectoryActionChosen2 = path2.build();
+        if (aprilTagId == 21) { // GPP  PURPLE ON THE RIGHT
+            Actions.runBlocking(
+                    new SequentialAction(
+                            outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY + 90),
+                            trajectoryActionChosen2,
+                            new SleepAction(0.2),
+                            blocker.l_Engaged(),
+                            new SleepAction(0.2),
+                            new ParallelAction(blocker.r_Engaged(), blocker.l_Disengaged(), intake1.intakeOn()), // purple ball #1 end
+                            new SleepAction(0.2),
+                            new ParallelAction(blocker.r_Disengaged()), // green ball #1 end // purple ball #1 start
+                            new SleepAction(0.5),
+                            blocker.r_Engaged(),
+                            new SleepAction(0.2),
+                            blocker.r_Disengaged(),
+                            new SleepAction(1)
+                    )
+            );
+
+        } else if (aprilTagId == 22) { // PGP
+            Actions.runBlocking(
+                    new SequentialAction(
+                            outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY + 90),
+                            trajectoryActionChosen2,
+                            new SleepAction(0.2),
+                            blocker.r_Engaged(),
+                            new SleepAction(0.3),
+                            new ParallelAction(blocker.r_Disengaged(), blocker.l_Engaged()),
+                            intake1.intakeOn(),
+                            new SleepAction(0.2),
+                            blocker.l_Disengaged(),
+                            new SleepAction(0.3),
+                            blocker.r_Engaged(),
+//                            new ParallelAction(blocker.r_Engaged(), blocker.l_Disengaged()),
+                            new SleepAction(0.2),
+                            blocker.r_Disengaged(),
+                            new SleepAction(1)
+                    )
+            );
+        } else { //PPG
+            Actions.runBlocking(
+                    new SequentialAction(
+                            outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY + 90),
+                            trajectoryActionChosen2,
+                            new SleepAction(0.2),
+                            intake1.intakeOn(),
+                            blocker.r_Engaged(),
+                            new SleepAction(0.2),
+                            blocker.r_Disengaged(),
+                            new SleepAction(0.5),
+                            blocker.r_Engaged(),
+                            new SleepAction(0.2),
+                            new ParallelAction(blocker.l_Engaged(), blocker.r_Disengaged()),
+                            new SleepAction(0.3),
+                            blocker.l_Disengaged(),
+                            new SleepAction(1)
+                    ) // launch 0.2 disengage 0.5 engage 0.2 diengate
+            );
+        }
+        /*
         Actions.runBlocking(
                 new SequentialAction(
                         outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+90),
@@ -75,7 +135,7 @@ public class RedClosePathOnly_Actions extends LinearOpMode{
                         new SleepAction(0.3),
                     new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()) // purple ball #1 end
                 )
-        );
+        );*/
 
         TrajectoryActionBuilder path3 = path2.endTrajectory()
                 .fresh()
@@ -83,13 +143,12 @@ public class RedClosePathOnly_Actions extends LinearOpMode{
                 .waitSeconds(0.6)
                 .lineToY(3, new TranslationalVelConstraint(17.0))
                 .waitSeconds(0.6);
-
         Action trajectoryActionChosen3 = path3.build();
+
         TrajectoryActionBuilder toShooter = path3.endTrajectory()
                 .fresh()
                 .splineToLinearHeading(new Pose2d(new Vector2d(-24, 36),Math.toRadians(-54)), 0) // like a z facing towards 90
                 .waitSeconds(0.6);
-
         Action trajectoryActionToShooterR1 = toShooter.build();
 
         Actions.runBlocking(
@@ -115,8 +174,6 @@ public class RedClosePathOnly_Actions extends LinearOpMode{
                 .waitSeconds(0.5)
                 .lineToY(5, new TranslationalVelConstraint(17.0))
                 .waitSeconds(0.5);
-//                .splineToLinearHeading(new Pose2d(new Vector2d(-24, -36),Math.toRadians(57)), 0)
-//                .waitSeconds(0.5);
 
         Action trajectoryActionChosen4 = path4.build();
 
