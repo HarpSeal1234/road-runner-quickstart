@@ -1,0 +1,153 @@
+package org.firstinspires.ftc.teamcode;
+
+// RR-specific imports
+
+import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.CLOSE_OUTTAKE_VELOCITY;
+
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+@Config
+@Autonomous(name = "red close path", group = "Autonomous")
+
+public class RedClosePathOnly extends LinearOpMode{
+    private static final boolean USE_WEBCAM = true;
+
+    public MecanumDrive drive ;
+    public void reportPosition(){
+        telemetry.addData("Current Position", this.drive.localizer.getPose());
+        telemetry.update();
+    }
+    public void runOpMode() {
+        // instantiate your MecanumDrive at a particular pose.
+        Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(0));
+        drive = new MecanumDrive(hardwareMap, initialPose);
+        AprilTagDetector aprilTagDetector = new AprilTagDetector(hardwareMap);
+        Intake intake1 = new Intake(hardwareMap);
+        Launcher outtake1 = new Launcher(hardwareMap);
+        Avocado blocker = new Avocado(hardwareMap);
+        Pivot pivot = new Pivot(hardwareMap);
+
+
+        int visionOutputPosition = 1;
+
+        TrajectoryActionBuilder path1 = drive.actionBuilder(initialPose)
+                .setTangent(0.0)
+                .splineToConstantHeading(new Vector2d(-24, 36), 0)
+                .waitSeconds(0.5);
+        pivot.closePivot();
+//        reportPosition();
+
+        waitForStart();
+        if (isStopRequested()) return;
+
+        Action trajectoryActionChosen1 = path1.build();
+        Actions.runBlocking(new ParallelAction(/*outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+200), */trajectoryActionChosen1,aprilTagDetector.detectAprilTag()));
+        int aprilTagId = aprilTagDetector.getDesiredTagId();
+        telemetry.addData("April Tag Id", aprilTagId);
+        telemetry.update();
+        TrajectoryActionBuilder path2 = path1.endTrajectory()
+                .fresh()
+                .turn(Math.toRadians(-45));
+
+        if (isStopRequested()) return;
+
+        Action trajectoryActionChosen2 = path2.build();
+        Actions.runBlocking(
+                new SequentialAction(
+//                        outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+90),
+                        trajectoryActionChosen2,
+//                        new SleepAction(0.2),
+//                        new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
+//                        new SleepAction(0.2),
+//                        new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged(),intake1.intakeOn()), // purple ball #1 end
+                        new SleepAction(0.5)
+//                        new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
+//                        new SleepAction(0.3),
+//                    new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()) // purple ball #1 end
+                )
+        );
+
+        TrajectoryActionBuilder path3 = path2.endTrajectory()
+                .fresh()
+                .splineTo(new Vector2d(-29.0, 15), Math.toRadians(-120))
+                .waitSeconds(0.6)
+                .lineToY(3, new TranslationalVelConstraint(17.0))
+                .waitSeconds(0.6);
+//                .splineTo(new Vector2d(-24.0, -36), Math.toRadians(48))
+//                .splineToLinearHeading(new Pose2d(new Vector2d(-24, -36),Math.toRadians(54)), 0) // like a z facing towards 90
+//                .waitSeconds(0.6);
+
+        Action trajectoryActionChosen3 = path3.build();
+        TrajectoryActionBuilder toShooter = path3.endTrajectory()
+                .fresh()
+                .splineToLinearHeading(new Pose2d(new Vector2d(-24, 36),Math.toRadians(-54)), 0) // like a z facing towards 90
+                .waitSeconds(0.6);
+
+        Action trajectoryActionToShooterR1 = toShooter.build();
+
+        Actions.runBlocking(
+                new SequentialAction(
+                        trajectoryActionChosen3,
+//                        intake1.IntakeOff(),
+                        trajectoryActionToShooterR1,
+//                        intake1.intakeOn(),
+//                        new SleepAction(0.2),
+//                        new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
+//                        new SleepAction(0.2),
+//                        new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()), // purple ball #1 end
+                        new SleepAction(0.5)
+//                        new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
+//                        new SleepAction(0.4),
+//                        new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()) // purple ball #1 end
+                )
+        );
+
+        TrajectoryActionBuilder path4 = toShooter.endTrajectory()
+                .fresh()
+//                .splineTo(new Vector2d(-65, -15), Math.toRadians(100))
+                .splineToLinearHeading(new Pose2d(new Vector2d(-49, 24),Math.toRadians(-115)), 0)
+                .waitSeconds(0.5)
+                .lineToY(5, new TranslationalVelConstraint(17.0))
+                .waitSeconds(0.5);
+//                .splineToLinearHeading(new Pose2d(new Vector2d(-24, -36),Math.toRadians(57)), 0)
+//                .waitSeconds(0.5);
+
+        Action trajectoryActionChosen4 = path4.build();
+
+        TrajectoryActionBuilder toShooter2 = path4.endTrajectory()
+                .fresh()
+                .splineToLinearHeading(new Pose2d(new Vector2d(-24, 36),Math.toRadians(-57)), 0)
+                .waitSeconds(0.5);
+
+        Action trajectoryActionToShooterR2 = toShooter2.build();
+
+        Actions.runBlocking(
+                new SequentialAction(
+//                        outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+60),
+                        trajectoryActionChosen4,
+//                        intake1.IntakeOff(),
+                        trajectoryActionToShooterR2
+//                        new SleepAction(0.2),
+//                        new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
+//                        new SleepAction(0.2),
+//                        new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged(),intake1.intakeOn()), // purple ball #1 end
+//                        new SleepAction(0.5),
+//                        new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
+//                        new SleepAction(0.8),
+//                        new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()) // purple ball #1 end
+                )
+        );
+
+    }
+}
