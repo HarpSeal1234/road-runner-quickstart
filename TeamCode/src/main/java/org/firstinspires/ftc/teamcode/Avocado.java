@@ -22,12 +22,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Avocado {
     private Servo blockerR;
     private Servo blockerL;
+    private DcMotorEx launcher;
     // LEFT BLOCKER
 
     // RIGHT BLOCKER
     public Avocado(HardwareMap hardwareMap){
         blockerR = hardwareMap.get(Servo.class, "blockerR");
         blockerL = hardwareMap.get(Servo.class, "blockerL");
+        launcher = hardwareMap.get(DcMotorEx.class, "outtake1");
         blockerR.setPosition(R_BLOCKER_DOWN);
         blockerL.setPosition(L_BLOCKER_DOWN);
     }
@@ -56,6 +58,20 @@ public class Avocado {
         return new L_Disengaged();
     }
 
+    public class L_Engaged_Speed_Check implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if(launcher.getVelocity() > 1400) {
+                blockerL.setPosition(L_BLOCKER_UP);
+                return false;
+            }
+            return true;
+        }
+    }
+    public Action l_Engaged_Speed_Check(){
+        return new L_Engaged_Speed_Check();
+    }
+
     public class R_Engaged implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -79,4 +95,20 @@ public class Avocado {
     public Action r_Disengaged(){
         return new R_Disengaged();
     }
+
+    public class R_Engaged_Speed_Check implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if(launcher.getVelocity() > 1400) {
+                blockerR.setPosition(R_BLOCKER_UP);
+                return false;
+            }
+            return true;
+        }
+    }
+
+    public Action r_Engaged_Speed_Check(){
+        return new R_Engaged_Speed_Check();
+    }
+
 }
