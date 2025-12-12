@@ -33,4 +33,6 @@ public class OrcaRoboticsConstants {
     public final static double kI = 0.08;
     public final static double kD = 0.0;
 
+    public final static double COLOR_SENSOR_GREEN_RED_RATIO_THRESHOLD = 2.0;
+
 }
