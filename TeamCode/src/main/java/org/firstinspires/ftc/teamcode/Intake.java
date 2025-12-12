@@ -32,8 +32,8 @@ public class Intake {
     private DcMotor intake1 = null;
 //    private CRServo pushR;
 //    private CRServo pushL;
-    public final static double INTAKE_POWER = 0.8;
-    public final static double INTAKE_ZERO_POWER = 0.8;
+    public final static double INTAKE_POWER = 0.9;
+    public final static double INTAKE_ZERO_POWER = 0.0;
     public Intake(HardwareMap hardwareMap){
         intake1 = hardwareMap.get(DcMotorEx.class,"intake1");
         intake1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
