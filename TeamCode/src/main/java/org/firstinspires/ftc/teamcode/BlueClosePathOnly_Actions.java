@@ -41,43 +41,46 @@ public class BlueClosePathOnly_Actions extends LinearOpMode{
 
         int visionOutputPosition = 1;
 
+        // DRIVE TO POSITION
         TrajectoryActionBuilder path1 = drive.actionBuilder(initialPose)
                 .setTangent(0.0)
                 .splineToConstantHeading(new Vector2d(-24, shootYpos), 0)
                 .waitSeconds(0.3);
+        Action trajectoryActionChosen1 = path1.build();
         pivot.closePivot();
 
         waitForStart();
         if (isStopRequested()) return;
 
-        Action trajectoryActionChosen1 = path1.build();
         Actions.runBlocking(new ParallelAction(outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+200), trajectoryActionChosen1,aprilTagDetector.detectAprilTag()));
+
         int aprilTagId = aprilTagDetector.getDesiredTagId();
         telemetry.addData("April Tag Id", aprilTagId);
         telemetry.update();
 
+        // TURN TO SHOOT
         TrajectoryActionBuilder path2 = path1.endTrajectory()
                 .fresh()
                 .turn(Math.toRadians(45));
         Action trajectoryActionChosen2 = path2.build();
 
+        // TRAVEL TO FIRST SPIKE MARK
         TrajectoryActionBuilder path3 = path2.endTrajectory()
                 .fresh()
                 .splineTo(new Vector2d(-29.0, -15), Math.toRadians(120))
                 .waitSeconds(0.6)
                 .lineToY(-3, new TranslationalVelConstraint(17.0))
                 .waitSeconds(0.6);
-//                .splineTo(new Vector2d(-24.0, -36), Math.toRadians(48))
-//                .splineToLinearHeading(new Pose2d(new Vector2d(-24, -36),Math.toRadians(54)), 0) // like a z facing towards 90
-//                .waitSeconds(0.6);
         Action trajectoryActionChosen3 = path3.build();
 
+        // TRAVEL BACK TO SHOOTER
         TrajectoryActionBuilder toShooter = path3.endTrajectory()
                 .fresh()
                 .splineToLinearHeading(new Pose2d(new Vector2d(-24, shootYpos),Math.toRadians(54)), 0) // like a z facing towards 90
                 .waitSeconds(0.6);
         Action trajectoryActionToShooterR1 = toShooter.build();
 
+        // TRAVEL TO SECOND SPIKE MARK
         TrajectoryActionBuilder path4 = toShooter.endTrajectory()
                 .fresh()
                 .splineToLinearHeading(new Pose2d(new Vector2d(-49, -24),Math.toRadians(115)), 0)
@@ -86,6 +89,7 @@ public class BlueClosePathOnly_Actions extends LinearOpMode{
                 .waitSeconds(0.5);
         Action trajectoryActionChosen4 = path4.build();
 
+        // TRAVEL BACK TO SHOOTER
         TrajectoryActionBuilder toShooter2 = path4.endTrajectory()
                 .fresh()
                 .splineToLinearHeading(new Pose2d(new Vector2d(-24, shootYpos),Math.toRadians(57)), 0)
@@ -125,7 +129,6 @@ public class BlueClosePathOnly_Actions extends LinearOpMode{
                         new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()) // purple ball #1 end
                 )
         );
-
 
         Actions.runBlocking(
                 new SequentialAction(
