@@ -211,12 +211,12 @@ public class BlueClosePathOnly_Actions extends LinearOpMode{
                         new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()) // purple ball #1 end
                 )
         );
-/*
+
         Actions.runBlocking(
                 new SequentialAction(
                         outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+60),
                         trajectoryActionChosen4,
-                        intake1.IntakeOff(),
+                        intake1.intakeOff(),
                         trajectoryActionToShooterR2,
                         new SleepAction(0.2),
                         new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
@@ -227,7 +227,7 @@ public class BlueClosePathOnly_Actions extends LinearOpMode{
                         new SleepAction(0.8),
                         new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()) // purple ball #1 end
                 )
-        );*/
+        );
 
     }
 }
