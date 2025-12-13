@@ -45,7 +45,7 @@ public class RedClosePathOnly_Actions extends LinearOpMode{
 
         TrajectoryActionBuilder path1 = drive.actionBuilder(initialPose)
                 .setTangent(0.0)
-                .splineToConstantHeading(new Vector2d(-24, 36), 0)
+                .splineToConstantHeading(new Vector2d(-24, 34), 0)
                 .waitSeconds(0.5);
         pivot.closePivot();
         Action trajectoryActionChosen1 = path1.build();
@@ -73,6 +73,7 @@ public class RedClosePathOnly_Actions extends LinearOpMode{
                             new ParallelAction(blocker.r_Engaged(), blocker.l_Disengaged(), intake1.intakeOn()), // purple ball #1 end
                             new SleepAction(0.2),
                             new ParallelAction(blocker.r_Disengaged()), // green ball #1 end // purple ball #1 start
+                            outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY + 100),
                             new SleepAction(0.5),
                             blocker.r_Engaged(),
                             new SleepAction(0.2),
@@ -147,7 +148,7 @@ public class RedClosePathOnly_Actions extends LinearOpMode{
 
         TrajectoryActionBuilder toShooter = path3.endTrajectory()
                 .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(-24, 36),Math.toRadians(-54)), 0) // like a z facing towards 90
+                .splineToLinearHeading(new Pose2d(new Vector2d(-24, 34),Math.toRadians(-54)), 0) // like a z facing towards 90
                 .waitSeconds(0.6);
         Action trajectoryActionToShooterR1 = toShooter.build();
 
@@ -179,14 +180,15 @@ public class RedClosePathOnly_Actions extends LinearOpMode{
 
         TrajectoryActionBuilder toShooter2 = path4.endTrajectory()
                 .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(-24, 36),Math.toRadians(-57)), 0)
+                .splineToLinearHeading(new Pose2d(new Vector2d(-24, 34),Math.toRadians(-57)), 0)
                 .waitSeconds(0.5);
 
         Action trajectoryActionToShooterR2 = toShooter2.build();
 
         TrajectoryActionBuilder leave = toShooter2.endTrajectory()
                 .fresh()
-                .lineToY(30)
+//                .lineToY(30)
+                .splineToConstantHeading(new Vector2d(-24,30),0.0)
                 .waitSeconds(0.5);
 
         Action leaveAction = leave.build();
