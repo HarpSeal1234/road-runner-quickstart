@@ -24,6 +24,8 @@ public class BlueClosePathOnly_Actions extends LinearOpMode{
     private static final boolean USE_WEBCAM = true;
 
     public MecanumDrive drive ;
+    private double trajectoryWait = 0.3;
+
     public double shootYpos = -35;
     public void reportPosition(){
         telemetry.addData("Current Position", this.drive.localizer.getPose());
@@ -45,7 +47,7 @@ public class BlueClosePathOnly_Actions extends LinearOpMode{
         TrajectoryActionBuilder path1 = drive.actionBuilder(initialPose)
                 .setTangent(0.0)
                 .splineToConstantHeading(new Vector2d(-24, shootYpos), 0)
-                .waitSeconds(0.3);
+                .waitSeconds(trajectoryWait);
         Action trajectoryActionChosen1 = path1.build();
         pivot.closePivot();
 
@@ -79,39 +81,39 @@ public class BlueClosePathOnly_Actions extends LinearOpMode{
         TrajectoryActionBuilder path3 = path2.endTrajectory()
                 .fresh()
                 .splineTo(new Vector2d(-29.0, -15), Math.toRadians(120))
-                .waitSeconds(0.6)
+                .waitSeconds(trajectoryWait)
                 .lineToY(-3, new TranslationalVelConstraint(17.0))
-                .waitSeconds(0.6);
+                .waitSeconds(trajectoryWait);
         Action trajectoryActionChosen3 = path3.build();
 
         // TRAVEL BACK TO SHOOTER
         TrajectoryActionBuilder toShooter = path3.endTrajectory()
                 .fresh()
                 .splineToLinearHeading(new Pose2d(new Vector2d(-24, shootYpos),Math.toRadians(54)), 0) // like a z facing towards 90
-                .waitSeconds(0.6);
+                .waitSeconds(trajectoryWait);
         Action trajectoryActionToShooterR1 = toShooter.build();
 
         // TRAVEL TO SECOND SPIKE MARK
         TrajectoryActionBuilder path4 = toShooter.endTrajectory()
                 .fresh()
                 .splineToLinearHeading(new Pose2d(new Vector2d(-49, -24),Math.toRadians(115)), 0)
-                .waitSeconds(0.5)
+                .waitSeconds(trajectoryWait)
                 .lineToY(-5, new TranslationalVelConstraint(16.0))
-                .waitSeconds(0.5);
+                .waitSeconds(trajectoryWait);
         Action trajectoryActionChosen4 = path4.build();
 
         // TRAVEL BACK TO SHOOTER
         TrajectoryActionBuilder toShooter2 = path4.endTrajectory()
                 .fresh()
                 .splineToLinearHeading(new Pose2d(new Vector2d(-24, shootYpos),Math.toRadians(57)), 0)
-                .waitSeconds(0.5);
+                .waitSeconds(trajectoryWait);
         Action trajectoryActionToShooterR2 = toShooter2.build();
 
         // LEAVE
         TrajectoryActionBuilder leavePath = toShooter2.endTrajectory()
                 .fresh()
                 .splineToConstantHeading(new Vector2d(-24,-10),0.0)
-                .waitSeconds(0.5);
+                .waitSeconds(trajectoryWait);
         Action leave = leavePath.build();
 
         if (isStopRequested()) return;

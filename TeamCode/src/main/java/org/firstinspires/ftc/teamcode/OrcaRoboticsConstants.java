@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 public class OrcaRoboticsConstants {
+    // AUTO
+    public final static double trajectoryWait = 0.3;
+
     // OUTTAKE
     public final static int FAR_OUTTAKE_VELOCITY = 1400;
     public final static int CLOSE_OUTTAKE_VELOCITY = 1100;

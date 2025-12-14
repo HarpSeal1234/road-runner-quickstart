@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 // RR-specific imports
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.CLOSE_OUTTAKE_VELOCITY;
+import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.trajectoryWait;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
@@ -45,7 +46,8 @@ public class redclose12 extends LinearOpMode{
 
         TrajectoryActionBuilder path1 = drive.actionBuilder(initialPose)
                 .setTangent(0.0)
-                .splineToConstantHeading(new Vector2d(-24, 36), 0);
+                .splineToConstantHeading(new Vector2d(-24, 36), 0)
+                .waitSeconds(trajectoryWait);
         pivot.closePivot();
         Action trajectoryActionChosen1 = path1.build();
 
@@ -56,7 +58,8 @@ public class redclose12 extends LinearOpMode{
 
         TrajectoryActionBuilder path2 = path1.endTrajectory()
                 .fresh()
-                .turn(Math.toRadians(-45));
+                .turn(Math.toRadians(-45))
+                .waitSeconds(trajectoryWait);
         Action trajectoryActionChosen2 = path2.build();
 
         if (isStopRequested()) return;
@@ -139,6 +142,7 @@ public class redclose12 extends LinearOpMode{
         TrajectoryActionBuilder path3 = path2.endTrajectory()
                 .fresh()
                 .splineTo(new Vector2d(-29.0, 15), Math.toRadians(-120))
+                .waitSeconds(trajectoryWait)
                 .lineToY(3, new TranslationalVelConstraint(17.0));
         Action trajectoryActionChosen3 = path3.build();
 
@@ -170,14 +174,16 @@ public class redclose12 extends LinearOpMode{
         TrajectoryActionBuilder path4 = toShooter.endTrajectory()
                 .fresh()
                 .splineToLinearHeading(new Pose2d(new Vector2d(-49, 24),Math.toRadians(-115)), 0)
-//                .lineToY(5, new TranslationalVelConstraint(17.0))
-                .lineToX(-68, new TranslationalVelConstraint(17.0));
+                .waitSeconds(trajectoryWait)
+                .lineToY(5, new TranslationalVelConstraint(17.0));
+//                .lineToX(-68, new TranslationalVelConstraint(17.0));
 
         Action trajectoryActionChosen4 = path4.build();
 
         TrajectoryActionBuilder toShooter2 = path4.endTrajectory()
                 .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(-24, 36),Math.toRadians(-57)), 0);
+                .splineToLinearHeading(new Pose2d(new Vector2d(-24, 36),Math.toRadians(-57)), 0)
+                .waitSeconds(trajectoryWait);
 
         Action trajectoryActionToShooterR2 = toShooter2.build();
 
@@ -202,7 +208,7 @@ public class redclose12 extends LinearOpMode{
 
         TrajectoryActionBuilder leave = toShooter2.endTrajectory()
                 .fresh()
-                .strafeTo(new Vector2d(-24,10));
+                .strafeTo(new Vector2d(-24,5));
 //                .splineToConstantHeading(new Vector2d(-24,10),0);
         Action leaveAction = leave.build();
 

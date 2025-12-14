@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.AutoTests;
 
 // RR-specific imports
 
@@ -12,11 +12,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+
 @Config
 @Disabled
-@Autonomous(name = "spline 90", group = "Autonomous")
+@Autonomous(name = "spline -45", group = "Autonomous")
 
-public class splineTangetn90 extends LinearOpMode{
+public class splineTangetnNEG45 extends LinearOpMode{
     private static final boolean USE_WEBCAM = true;
 
     public MecanumDrive drive ;
@@ -30,7 +32,7 @@ public class splineTangetn90 extends LinearOpMode{
         // TURN TO SHOOT
         TrajectoryActionBuilder path2 = drive.actionBuilder(initialPose)
                 .fresh()
-                .splineToLinearHeading(new Pose2d(-24,24,Math.toRadians(5)),Math.toRadians(90));
+                .splineToLinearHeading(new Pose2d(-24,24,Math.toRadians(5)),Math.toRadians(-45));
         Action trajectoryActionChosen2 = path2.build();
 
         if (isStopRequested()) return;

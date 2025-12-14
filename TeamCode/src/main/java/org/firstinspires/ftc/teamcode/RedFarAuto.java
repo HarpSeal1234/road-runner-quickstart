@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 // RR-specific imports
 
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.FAR_OUTTAKE_VELOCITY;
+import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.trajectoryWait;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
@@ -44,7 +45,7 @@ public class RedFarAuto extends LinearOpMode {
         TrajectoryActionBuilder path1 = drive.actionBuilder(initialPose)
                 .setTangent(0.0)
                 .splineToLinearHeading(new Pose2d(new Vector2d(10.0, 2), Math.toRadians(-19.0)), Math.toRadians(0.0))
-                .waitSeconds(0.3);
+                .waitSeconds(trajectoryWait);
         Action trajectoryActionChosen1 = path1.build();
         pivot.farPivot();
 
@@ -52,36 +53,36 @@ public class RedFarAuto extends LinearOpMode {
                 .fresh()
                 .setTangent(0.0)
                 .splineToLinearHeading(new Pose2d(new Vector2d(23, -19.5), Math.toRadians(-70)), Math.toRadians(0.0))
-                .waitSeconds(0.5)
+                .waitSeconds(trajectoryWait)
                 .lineToY(-30, new TranslationalVelConstraint(17.0))
-                .waitSeconds(0.5);
+                .waitSeconds(trajectoryWait);
         Action trajectoryActionChosen2 = path2.build();
 
         TrajectoryActionBuilder toShooterP1 = path2.endTrajectory()
                 .fresh()
                 .splineToLinearHeading(new Pose2d(new Vector2d(9.5, -1.5), Math.toRadians(-25)), Math.toRadians(0.0))
-                .waitSeconds(0.5);
+                .waitSeconds(trajectoryWait);
         Action toShooterA1 = toShooterP1.build();
 
         TrajectoryActionBuilder path3 = toShooterP1.endTrajectory()
                 .fresh()
                 .setTangent(0.0)
                 .splineToLinearHeading(new Pose2d(new Vector2d(9, -24), Math.toRadians(-100)), Math.toRadians(0.0))
-                .waitSeconds(0.5)
+                .waitSeconds(trajectoryWait)
                 .lineToY(-45, new TranslationalVelConstraint(17.0))
-                .waitSeconds(0.5);
+                .waitSeconds(trajectoryWait);
         Action trajectoryActionChosen3 = path3.build();
 
         TrajectoryActionBuilder toShooterP2 = path3.endTrajectory()
                 .fresh()
                 .splineToLinearHeading(new Pose2d(new Vector2d(10, -1.5), Math.toRadians(335)), Math.toRadians(0.0))
-                .waitSeconds(0.5);
+                .waitSeconds(trajectoryWait);
         Action toShooterA2 = toShooterP2.build();
 
         TrajectoryActionBuilder leavePath = toShooterP2.endTrajectory()
                 .fresh()
                 .splineToConstantHeading(new Vector2d(10,-10),0)
-                .waitSeconds(0.5);
+                .waitSeconds(trajectoryWait);
         Action leave = leavePath.build();
 
         waitForStart();
