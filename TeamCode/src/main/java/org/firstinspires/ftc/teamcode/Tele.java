@@ -264,6 +264,8 @@ public class Tele extends LinearOpMode {
                     rightBlockerEngaged = true;
                     rightBlockerTimer.reset();
                 }
+            } else if (gamepad2.y){
+                outtake1.setVelocity(-400);
             }
             /*else if (gamepad2.b){
                 blockerPositionL = L_BLOCKER_DOWN;
