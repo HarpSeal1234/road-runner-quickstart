@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -33,12 +34,16 @@ public class AprilTagDetector {
     }
 
     public int fetchAprilTag(){
+        ElapsedTime timer = new ElapsedTime();
         while (true) {
             List<AprilTagDetection> currentDetections = aprilTagProcessor.getDetections();
             if (!currentDetections.isEmpty()) {
                 desiredTagId = currentDetections.get(0).id;
                 visionPortal.stopStreaming();
                 return desiredTagId;
+            }
+            if(timer.milliseconds() > 300){
+                return -1;
             }
         }
     }
@@ -47,7 +52,10 @@ public class AprilTagDetector {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             List<AprilTagDetection> currentDetections = aprilTagProcessor.getDetections();
-            if(currentDetections.isEmpty()) return true;
+            ElapsedTime timer = new ElapsedTime();
+            if(currentDetections.isEmpty()) {
+                return !(timer.milliseconds() > 300);
+            }
             else {
                 desiredTagId = currentDetections.get(0).id;
                 visionPortal.stopStreaming();
