@@ -96,7 +96,7 @@ public class BlueClosePathOnly_Actions extends LinearOpMode{
                 .fresh()
                 .splineToLinearHeading(new Pose2d(new Vector2d(-49, -24),Math.toRadians(115)), 0)
                 .waitSeconds(0.5)
-                .lineToY(-5, new TranslationalVelConstraint(17.0))
+                .lineToY(-5, new TranslationalVelConstraint(16.0))
                 .waitSeconds(0.5);
         Action trajectoryActionChosen4 = path4.build();
 
@@ -106,6 +106,13 @@ public class BlueClosePathOnly_Actions extends LinearOpMode{
                 .splineToLinearHeading(new Pose2d(new Vector2d(-24, shootYpos),Math.toRadians(57)), 0)
                 .waitSeconds(0.5);
         Action trajectoryActionToShooterR2 = toShooter2.build();
+
+        // LEAVE
+        TrajectoryActionBuilder leavePath = toShooter2.endTrajectory()
+                .fresh()
+                .splineToConstantHeading(new Vector2d(-24,-10),0.0)
+                .waitSeconds(0.5);
+        Action leave = leavePath.build();
 
         if (isStopRequested()) return;
 
@@ -225,7 +232,8 @@ public class BlueClosePathOnly_Actions extends LinearOpMode{
                         new SleepAction(0.5),
                         new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
                         new SleepAction(0.8),
-                        new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()) // purple ball #1 end
+                        new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()), // purple ball #1 end
+                        leave
                 )
         );
 

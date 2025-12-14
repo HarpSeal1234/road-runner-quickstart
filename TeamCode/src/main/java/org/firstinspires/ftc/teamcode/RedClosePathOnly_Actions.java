@@ -43,22 +43,74 @@ public class RedClosePathOnly_Actions extends LinearOpMode{
         waitForStart();
         if (isStopRequested()) return;
 
+        // Look at april tag
         TrajectoryActionBuilder path1 = drive.actionBuilder(initialPose)
                 .setTangent(0.0)
-                .splineToConstantHeading(new Vector2d(-24, 34), 0)
-                .waitSeconds(0.5);
+                .splineToConstantHeading(new Vector2d(-24, 36), 0)
+                .waitSeconds(0.6);
         pivot.closePivot();
         Action trajectoryActionChosen1 = path1.build();
 
-        Actions.runBlocking(new ParallelAction(outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+200), trajectoryActionChosen1,aprilTagDetector.detectAprilTag()));
+        Actions.runBlocking(
+                new SequentialAction(
+                        new ParallelAction(
+                                outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+200),
+                                trajectoryActionChosen1,
+                                aprilTagDetector.detectAprilTag()
+                        ),
+                        new SleepAction(0.3)
+                )
+        );
         int aprilTagId = aprilTagDetector.getDesiredTagId();
         telemetry.addData("April Tag Id", aprilTagId);
         telemetry.update();
 
+        // TURN TO SHOOT
         TrajectoryActionBuilder path2 = path1.endTrajectory()
                 .fresh()
                 .turn(Math.toRadians(-45));
         Action trajectoryActionChosen2 = path2.build();
+
+        // FETCH FIRST ROW
+        TrajectoryActionBuilder path3 = path2.endTrajectory()
+                .fresh()
+                .splineTo(new Vector2d(-29.0, 15), Math.toRadians(-120))
+//                .waitSeconds(0.6)
+                .lineToY(3, new TranslationalVelConstraint(17.0));
+//                .waitSeconds(0.6);
+        Action trajectoryActionChosen3 = path3.build();
+
+
+
+        // GO TO SHOOT
+        TrajectoryActionBuilder toShooter = path3.endTrajectory()
+                .fresh()
+                .splineToLinearHeading(new Pose2d(new Vector2d(-24, 34),Math.toRadians(-54)), 0); // like a z facing towards 90
+//                .waitSeconds(0.6);
+        Action trajectoryActionToShooterR1 = toShooter.build();
+
+        // FETCH SECOND ROW
+        TrajectoryActionBuilder path4 = toShooter.endTrajectory()
+                .fresh()
+                .splineToLinearHeading(new Pose2d(new Vector2d(-49, 24),Math.toRadians(-115)), 0)
+//                .waitSeconds(0.5)
+                .lineToY(5, new TranslationalVelConstraint(17.0));
+//                .waitSeconds(0.5);
+        Action trajectoryActionChosen4 = path4.build();
+
+        // GO TO SHOOT
+        TrajectoryActionBuilder toShooter2 = path4.endTrajectory()
+                .fresh()
+                .splineToLinearHeading(new Pose2d(new Vector2d(-24, 34),Math.toRadians(-57)), 0);
+//                .waitSeconds(0.5);
+        Action trajectoryActionToShooterR2 = toShooter2.build();
+
+        // LEAVE
+        TrajectoryActionBuilder leave = toShooter2.endTrajectory()
+                .fresh()
+                .splineToConstantHeading(new Vector2d(-24,29),0.0);
+//                .waitSeconds(0.5);
+        Action leaveAction = leave.build();
 
         if (isStopRequested()) return;
 
@@ -122,35 +174,6 @@ public class RedClosePathOnly_Actions extends LinearOpMode{
                     ) // launch 0.2 disengage 0.5 engage 0.2 diengate
             );
         }
-        /*
-        Actions.runBlocking(
-                new SequentialAction(
-                        outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+90),
-                        trajectoryActionChosen2,
-                        new SleepAction(0.2),
-                        new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
-                        new SleepAction(0.2),
-                        new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged(),intake1.intakeOn()), // purple ball #1 end
-                        new SleepAction(0.5),
-                        new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
-                        new SleepAction(0.3),
-                    new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()) // purple ball #1 end
-                )
-        );*/
-
-        TrajectoryActionBuilder path3 = path2.endTrajectory()
-                .fresh()
-                .splineTo(new Vector2d(-29.0, 15), Math.toRadians(-120))
-                .waitSeconds(0.6)
-                .lineToY(3, new TranslationalVelConstraint(17.0))
-                .waitSeconds(0.6);
-        Action trajectoryActionChosen3 = path3.build();
-
-        TrajectoryActionBuilder toShooter = path3.endTrajectory()
-                .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(-24, 34),Math.toRadians(-54)), 0) // like a z facing towards 90
-                .waitSeconds(0.6);
-        Action trajectoryActionToShooterR1 = toShooter.build();
 
         Actions.runBlocking(
                 new SequentialAction(
@@ -168,30 +191,6 @@ public class RedClosePathOnly_Actions extends LinearOpMode{
                         new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()) // purple ball #1 end
                 )
         );
-
-        TrajectoryActionBuilder path4 = toShooter.endTrajectory()
-                .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(-49, 24),Math.toRadians(-115)), 0)
-                .waitSeconds(0.5)
-                .lineToY(5, new TranslationalVelConstraint(17.0))
-                .waitSeconds(0.5);
-
-        Action trajectoryActionChosen4 = path4.build();
-
-        TrajectoryActionBuilder toShooter2 = path4.endTrajectory()
-                .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(-24, 34),Math.toRadians(-57)), 0)
-                .waitSeconds(0.5);
-
-        Action trajectoryActionToShooterR2 = toShooter2.build();
-
-        TrajectoryActionBuilder leave = toShooter2.endTrajectory()
-                .fresh()
-//                .lineToY(30)
-                .splineToConstantHeading(new Vector2d(-24,30),0.0)
-                .waitSeconds(0.5);
-
-        Action leaveAction = leave.build();
 
         Actions.runBlocking(
                 new SequentialAction(

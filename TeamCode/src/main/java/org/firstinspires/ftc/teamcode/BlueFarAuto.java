@@ -59,24 +59,30 @@ public class BlueFarAuto extends LinearOpMode {
 
         TrajectoryActionBuilder toShooterP1 = path2.endTrajectory()
                 .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(9.5, 1.5), Math.toRadians(25)), Math.toRadians(0.0))
+                .splineToLinearHeading(new Pose2d(new Vector2d(9, 1.5), Math.toRadians(25)), Math.toRadians(0.0))
                 .waitSeconds(0.5);
         Action toShooterA1 = toShooterP1.build();
 
         TrajectoryActionBuilder path3 = toShooterP1.endTrajectory()
                 .fresh()
                 .setTangent(0.0)
-                .splineToLinearHeading(new Pose2d(new Vector2d(19, 23), Math.toRadians(125)), Math.toRadians(0.0))
+                .splineToLinearHeading(new Pose2d(new Vector2d(9, 24), Math.toRadians(100)), Math.toRadians(0.0))
                 .waitSeconds(0.5)
-                .lineToY(35, new TranslationalVelConstraint(17.0))
+                .lineToY(45, new TranslationalVelConstraint(17.0))
                 .waitSeconds(0.5);
         Action trajectoryActionChosen3 = path3.build();
 
         TrajectoryActionBuilder toShooterP2 = path3.endTrajectory()
                 .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(10, 1.5), Math.toRadians(28)), Math.toRadians(0.0))
+                .splineToLinearHeading(new Pose2d(new Vector2d(9, 1.5), Math.toRadians(-335)), Math.toRadians(0.0))
                 .waitSeconds(0.5);
         Action toShooterA2 = toShooterP2.build();
+
+        TrajectoryActionBuilder leavePath = toShooterP2.endTrajectory()
+                .fresh()
+                .splineToConstantHeading(new Vector2d(10,10),0)
+                .waitSeconds(0.5);
+        Action leave = leavePath.build();
 
         waitForStart();
         if (isStopRequested()) return;
@@ -197,7 +203,8 @@ public class BlueFarAuto extends LinearOpMode {
                         blocker.l_Engaged(),
                         new SleepAction(0.2),
                         new ParallelAction(blocker.r_Disengaged(), blocker.l_Disengaged()),
-                        new SleepAction(0.6)
+                        new SleepAction(0.6),
+                        leave
                         )
         );
     }
