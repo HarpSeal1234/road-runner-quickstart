@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 @TeleOp(name="color", group="Linear OpMode")
-
+@Disabled
 public class colorCheck extends LinearOpMode {
     private NormalizedColorSensor r_frontColorSensor;
     private NormalizedColorSensor l_frontColorSensor;

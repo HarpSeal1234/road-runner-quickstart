@@ -15,9 +15,11 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Config
+@Disabled
 @Autonomous(name = "blue close path", group = "Autonomous")
 
 public class BlueClosePathOnly extends LinearOpMode{
