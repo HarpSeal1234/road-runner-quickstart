@@ -74,7 +74,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="AA_decode1024", group="Linear OpMode")
+@TeleOp(name="AA_decode1024", group="! Linear OpMode")
 public class Tele extends LinearOpMode {
 
     // Declare OpMode members.

@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Config
-@Autonomous(name = "red close old one 12/12", group = "Autonomous")
+@Autonomous(name = "Red Close Auto", group = "Autonomous")
 
 public class redclose12 extends LinearOpMode{
     private static final boolean USE_WEBCAM = true;

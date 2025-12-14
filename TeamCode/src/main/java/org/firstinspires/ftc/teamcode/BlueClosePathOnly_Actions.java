@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 // RR-specific imports
 
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.CLOSE_OUTTAKE_VELOCITY;
+import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.trajectoryWait;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
@@ -18,13 +19,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Config
-@Autonomous(name = "blue close", group = "Autonomous")
+@Autonomous(name = "Blue Close Auto", group = "Autonomous")
 
 public class BlueClosePathOnly_Actions extends LinearOpMode{
     private static final boolean USE_WEBCAM = true;
 
     public MecanumDrive drive ;
-    private double trajectoryWait = 0.3;
+//    private double trajectoryWait = 0.3;
 
     public double shootYpos = -35;
     public void reportPosition(){

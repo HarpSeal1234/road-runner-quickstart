@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;// RR-specific imports
+package org.firstinspires.ftc.teamcode.AutoOld;// RR-specific imports
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
@@ -11,11 +11,21 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
- // GUIDE : Positive TURN VALUE -- TURN LEFT
+
+import org.firstinspires.ftc.teamcode.AprilTagDetector;
+import org.firstinspires.ftc.teamcode.Avocado;
+import org.firstinspires.ftc.teamcode.Intake;
+import org.firstinspires.ftc.teamcode.Launcher;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Pivot;
+
+// GUIDE : Positive TURN VALUE -- TURN LEFT
 //          Positive Y Value -- RIGHT
 // positive X Value -- FORWARD
 @Config
+@Disabled
 @Autonomous(name = "RedCloseAuto", group = "Autonomous")
 
 public class RedCloseAuto extends LinearOpMode{
