@@ -198,7 +198,7 @@ public class redclose12 extends LinearOpMode{
                         new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
                         new SleepAction(0.2),
                         new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged(),intake1.intakeOn()), // purple ball #1 end
-                        new SleepAction(0.5),
+                        new SleepAction(0.7),
                         new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
                         new SleepAction(0.8),
                         new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()), // purple ball #1 end
