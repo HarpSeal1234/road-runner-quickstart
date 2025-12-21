@@ -141,7 +141,7 @@ public class redclose12 extends LinearOpMode{
 
         TrajectoryActionBuilder path3 = path2.endTrajectory()
                 .fresh()
-                .splineTo(new Vector2d(-29.0, 15), Math.toRadians(-120))
+                .splineTo(new Vector2d(-27.0, 15), Math.toRadians(-120))
                 .waitSeconds(trajectoryWait)
                 .lineToY(3, new TranslationalVelConstraint(17.0));
         Action trajectoryActionChosen3 = path3.build();
@@ -173,7 +173,7 @@ public class redclose12 extends LinearOpMode{
 
         TrajectoryActionBuilder path4 = toShooter.endTrajectory()
                 .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(-49, 24),Math.toRadians(-115)), 0)
+                .splineToLinearHeading(new Pose2d(new Vector2d(-46, 24),Math.toRadians(-115)), 0)
                 .waitSeconds(trajectoryWait)
                 .lineToY(5, new TranslationalVelConstraint(17.0));
 //                .lineToX(-68, new TranslationalVelConstraint(17.0));
