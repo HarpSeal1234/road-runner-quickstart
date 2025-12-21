@@ -204,6 +204,7 @@ public class Tele extends LinearOpMode {
         ElapsedTime rightBlockerTimer = new ElapsedTime();
         ElapsedTime leftBlockerTimer = new ElapsedTime();
         ElapsedTime patternTimer = new ElapsedTime();
+        ElapsedTime velocityTimer = new ElapsedTime();
 
 
         waitForStart();
@@ -219,7 +220,7 @@ public class Tele extends LinearOpMode {
             double leftBackPower = Range.clip((y - x + rx),-DRIVE_POWER,DRIVE_POWER);
             double rightFrontPower = Range.clip((y - x - rx),-DRIVE_POWER,DRIVE_POWER);
             double rightBackPower = Range.clip((y + x - rx),-DRIVE_POWER,DRIVE_POWER);
-            targetv = ((1450.0-1100)/(130-42))*(getRobotToGoalDistance()-42)+1100;
+            targetv = Range.clip((((1450.0-1100)/(130-42))*(getRobotToGoalDistance()-42)+1100),900,FAR_OUTTAKE_VELOCITY);
 
 
 //            telemetryAprilTag();
@@ -253,32 +254,22 @@ public class Tele extends LinearOpMode {
             //controls
             // OUTTAKE
             if(gamepad2.left_bumper) {
-                outtake1.setVelocity(FAR_OUTTAKE_VELOCITY);
-                outtake2.setVelocity(FAR_OUTTAKE_VELOCITY);
+                targetOuttakeVelocity = FAR_OUTTAKE_VELOCITY;
+//                outtake1.setVelocity(FAR_OUTTAKE_VELOCITY);
+//                outtake2.setVelocity(FAR_OUTTAKE_VELOCITY);
             } else if(gamepad2.right_bumper) {
-                outtake1.setVelocity(CLOSE_OUTTAKE_VELOCITY);
-                outtake2.setVelocity(CLOSE_OUTTAKE_VELOCITY);
+                targetOuttakeVelocity = CLOSE_OUTTAKE_VELOCITY;
+//                outtake1.setVelocity(CLOSE_OUTTAKE_VELOCITY);
+//                outtake2.setVelocity(CLOSE_OUTTAKE_VELOCITY);
             } else if (gamepad2.y){
-                outtake1.setVelocity(-400);
+                targetOuttakeVelocity = -400;
             } else if (gamepad2.dpad_right) {
-                outtake1.setVelocity(0.0);
-                outtake2.setVelocity(0.0);
+                targetOuttakeVelocity = 0;
+                velocityTimer.reset();
+//                outtake1.setVelocity(0.0);
+//                outtake2.setVelocity(0.0);
             } else if (gamepad1.dpad_up){
-                targetOuttakeVelocity = 1000;
-                outtake1.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
-                outtake2.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
-            }else if (gamepad1.dpad_right){
-                targetOuttakeVelocity = 1200;
-                outtake1.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
-                outtake2.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
-            }else if (gamepad1.dpad_down){
-                targetOuttakeVelocity = 1300;
-                outtake1.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
-                outtake2.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
-            }else if (gamepad1.dpad_left){
-                targetOuttakeVelocity = 1150;
-                outtake1.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
-                outtake2.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
+                targetOuttakeVelocity = targetv;
             }
 
 
@@ -350,9 +341,13 @@ public class Tele extends LinearOpMode {
                     rightBlockerEngaged = false;
                 }
             }
+            if (velocityTimer.seconds() > 2) {
+                targetv = Range.clip((((1450.0-1100)/(130-42))*(getRobotToGoalDistance()-42)+1100),900,FAR_OUTTAKE_VELOCITY);
+                velocityTimer.reset();
+            }
 
-
-
+            outtake1.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
+            outtake2.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
             getRobotToGoalDistance();
             intake1.setPower(intakePower);
             telemetry();
@@ -669,7 +664,7 @@ public class Tele extends LinearOpMode {
         telemetry.addData("blockerPosLEFT", "Position: " + blockerPositionL);
         telemetry.addData("blockerPosRIGHT", "Position: " + blockerPositionR);
         telemetry.addData("Current Position", "Position: " + pivotPosition);
-        telemetry.addData("Target Velocity", targetOuttakeVelocity);
+        telemetry.addData("Target Velocity", targetv);
         telemetry.addData("Outtake 1 power", outtake1.getPower());
         telemetry.addData("Outtake 2 power", outtake2.getPower());
         telemetry.addData("Outtake 1 Velocity", outtake1.getVelocity());
