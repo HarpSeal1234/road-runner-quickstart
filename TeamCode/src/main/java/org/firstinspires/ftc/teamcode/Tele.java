@@ -155,6 +155,7 @@ public class Tele extends LinearOpMode {
     int waitTime = 250;
     private Servo pivot;
     private double targetv = 0;
+    boolean autoUpdate = false;
 
     private static final boolean USE_WEBCAM = true;
     private Position cameraPosition = new Position(DistanceUnit.INCH,
@@ -205,6 +206,7 @@ public class Tele extends LinearOpMode {
         ElapsedTime leftBlockerTimer = new ElapsedTime();
         ElapsedTime patternTimer = new ElapsedTime();
         ElapsedTime velocityTimer = new ElapsedTime();
+        double lastTargetV = 0;
 
 
         waitForStart();
@@ -255,21 +257,25 @@ public class Tele extends LinearOpMode {
             // OUTTAKE
             if(gamepad2.left_bumper) {
                 targetOuttakeVelocity = FAR_OUTTAKE_VELOCITY;
+                autoUpdate = false;
 //                outtake1.setVelocity(FAR_OUTTAKE_VELOCITY);
 //                outtake2.setVelocity(FAR_OUTTAKE_VELOCITY);
             } else if(gamepad2.right_bumper) {
                 targetOuttakeVelocity = CLOSE_OUTTAKE_VELOCITY;
+                autoUpdate = false;
 //                outtake1.setVelocity(CLOSE_OUTTAKE_VELOCITY);
 //                outtake2.setVelocity(CLOSE_OUTTAKE_VELOCITY);
             } else if (gamepad2.y){
                 targetOuttakeVelocity = -400;
             } else if (gamepad2.dpad_right) {
                 targetOuttakeVelocity = 0;
-                velocityTimer.reset();
+                autoUpdate = false;
 //                outtake1.setVelocity(0.0);
 //                outtake2.setVelocity(0.0);
             } else if (gamepad1.dpad_up){
-                targetOuttakeVelocity = targetv;
+                autoUpdate = true;
+//                targetOuttakeVelocity = targetv;
+                velocityTimer.reset();
             }
 
 
@@ -341,10 +347,37 @@ public class Tele extends LinearOpMode {
                     rightBlockerEngaged = false;
                 }
             }
+            /*
             if (velocityTimer.seconds() > 2) {
                 targetv = Range.clip((((1450.0-1100)/(130-42))*(getRobotToGoalDistance()-42)+1100),900,FAR_OUTTAKE_VELOCITY);
                 velocityTimer.reset();
             }
+
+             */
+
+            if (autoUpdate){
+                if (getGoal()) {
+                    targetv = Range.clip((((1450.0-1100)/(130-42))*(getRobotToGoalDistance()-42)+1100),900,FAR_OUTTAKE_VELOCITY);
+                    lastTargetV = targetv;
+                    velocityTimer.reset();
+                } else if (!getGoal() && (velocityTimer.seconds() > 1)){
+                    targetv = lastTargetV;
+                } else {
+                    targetv = Range.clip((((1450.0-1100)/(130-42))*(getRobotToGoalDistance()-42)+1100),900,FAR_OUTTAKE_VELOCITY);
+                }
+//                if (velocityTimer.seconds() > 1){
+//                    targetv = Range.clip((((1450.0-1100)/(130-42))*(getRobotToGoalDistance()-42)+1100),900,FAR_OUTTAKE_VELOCITY);
+//                    velocityTimer.reset();
+//                }
+                targetOuttakeVelocity = targetv;
+            }
+/*
+            if (velocityTimer.seconds() > 2){
+                if (autoUpdate) {
+                    targetv = Range.clip((((1450.0-1100)/(130-42))*(getRobotToGoalDistance()-42)+1100),900,FAR_OUTTAKE_VELOCITY);
+                    targetOuttakeVelocity = targetv;
+                }
+            }*/
 
             outtake1.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
             outtake2.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
@@ -570,6 +603,24 @@ public class Tele extends LinearOpMode {
             }
         }
         return distance;
+    } // end method
+
+    private boolean getGoal(){
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        telemetry.addData("# AprilTags Detected", currentDetections.size());
+//        double id = -1.0;
+        boolean goal = false;
+
+        // Step through the list of detections and display info for each one.
+        for (AprilTagDetection detection : currentDetections) {
+            if (detection.metadata != null) {
+                if (detection.id == 20 || detection.id == 24){
+                    goal = true;
+                    break;
+                }
+            }
+        }
+        return goal;
     }
     private void initAprilTag() {
 
