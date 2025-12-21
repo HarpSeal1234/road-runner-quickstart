@@ -154,6 +154,7 @@ public class Tele extends LinearOpMode {
     double l_backDistance = 0.0;
     int waitTime = 250;
     private Servo pivot;
+    private double targetv = 0;
 
     private static final boolean USE_WEBCAM = true;
     private Position cameraPosition = new Position(DistanceUnit.INCH,
@@ -179,6 +180,7 @@ public class Tele extends LinearOpMode {
 //        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
 //        telemetry.addData(">", "Touch START to start OpMode");
 //        telemetry.update();
+
 
         initHardware();
 
@@ -217,7 +219,7 @@ public class Tele extends LinearOpMode {
             double leftBackPower = Range.clip((y - x + rx),-DRIVE_POWER,DRIVE_POWER);
             double rightFrontPower = Range.clip((y - x - rx),-DRIVE_POWER,DRIVE_POWER);
             double rightBackPower = Range.clip((y + x - rx),-DRIVE_POWER,DRIVE_POWER);
-        double ypos = detection.robotPose.getPosition().y;
+            targetv = ((1450.0-1100)/(130-42))*(getRobotToGoalDistance()-42)+1100;
 
 
 //            telemetryAprilTag();
@@ -279,7 +281,6 @@ public class Tele extends LinearOpMode {
                 outtake2.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
             }
 
-            if ()
 
             //PIVOT
             if (gamepad1.x) {
@@ -352,7 +353,7 @@ public class Tele extends LinearOpMode {
 
 
 
-
+            getRobotToGoalDistance();
             intake1.setPower(intakePower);
             telemetry();
 
@@ -543,17 +544,9 @@ public class Tele extends LinearOpMode {
         for (AprilTagDetection detection : currentDetections) {
             if (detection.metadata != null) {
                 telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                // Only use tags that don't have Obelisk in them
-                if (!detection.metadata.name.contains("Obelisk")) {
-                    telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)",
-                            detection.robotPose.getPosition().x,
-                            detection.robotPose.getPosition().y,
-                            detection.robotPose.getPosition().z));
-                    telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)",
-                            detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES),
-                            detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES),
-                            detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)));
-                }
+                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
             } else {
                 telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
                 telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
@@ -563,7 +556,25 @@ public class Tele extends LinearOpMode {
         // Add "key" information to telemetry
         telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
         telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
+        telemetry.addLine("RBE = Range, Bearing & Elevation");
 
+    }   // end method telemetryAprilTag()
+
+    private double getRobotToGoalDistance(){
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        telemetry.addData("# AprilTags Detected", currentDetections.size());
+        double distance = -1.0;
+
+        // Step through the list of detections and display info for each one.
+        for (AprilTagDetection detection : currentDetections) {
+            if (detection.metadata != null) {
+                if (detection.id == 20 || detection.id == 24){
+                    distance = detection.ftcPose.y;
+                    break;
+                }
+            }
+        }
+        return distance;
     }
     private void initAprilTag() {
 
@@ -577,7 +588,6 @@ public class Tele extends LinearOpMode {
                 //.setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 //.setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
                 //.setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
-                .setCameraPose(cameraPosition, cameraOrientation)
 
                 // == CAMERA CALIBRATION ==
                 // If you do not manually specify calibration parameters, the SDK will attempt
@@ -610,7 +620,7 @@ public class Tele extends LinearOpMode {
         //builder.setCameraResolution(new Size(640, 480));
 
         // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
-        //builder.enableLiveView(true);
+        builder.enableLiveView(true);
 
         // Set the stream format; MJPEG uses less bandwidth than default YUY2.
         //builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
