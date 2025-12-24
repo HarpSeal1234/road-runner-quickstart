@@ -258,27 +258,20 @@ public class Tele extends LinearOpMode {
             if(gamepad2.left_bumper) {
                 targetOuttakeVelocity = FAR_OUTTAKE_VELOCITY;
                 autoUpdate = false;
-//                outtake1.setVelocity(FAR_OUTTAKE_VELOCITY);
-//                outtake2.setVelocity(FAR_OUTTAKE_VELOCITY);
             } else if(gamepad2.right_bumper) {
                 targetOuttakeVelocity = CLOSE_OUTTAKE_VELOCITY;
                 autoUpdate = false;
-//                outtake1.setVelocity(CLOSE_OUTTAKE_VELOCITY);
-//                outtake2.setVelocity(CLOSE_OUTTAKE_VELOCITY);
             } else if (gamepad2.y){
                 targetOuttakeVelocity = -400;
             } else if (gamepad2.dpad_right) {
                 targetOuttakeVelocity = 0;
                 autoUpdate = false;
-//                outtake1.setVelocity(0.0);
-//                outtake2.setVelocity(0.0);
-            } else if (gamepad1.dpad_up){
+            } else if (gamepad2.dpad_up){
                 autoUpdate = true;
-//                targetOuttakeVelocity = targetv;
                 velocityTimer.reset();
             }
 
-
+/*
             //PIVOT
             if (gamepad1.x) {
                 pivotPosition = ACTUAL_PIVOT_POSITION;
@@ -289,6 +282,8 @@ public class Tele extends LinearOpMode {
                 pivotPosition = Range.clip(pivotPosition, 0.0, 1.0);
                 pivot.setPosition(pivotPosition);
             }
+
+ */
 
             // AVOCADOS
             if (gamepad2.b){
@@ -320,6 +315,7 @@ public class Tele extends LinearOpMode {
                 }
             }
 
+
             // INTAKE
             if (gamepad1.right_bumper) {
                 intakePower = INTAKE_POWER;
@@ -330,9 +326,7 @@ public class Tele extends LinearOpMode {
                 intakePower = -INTAKE_POWER;
             }
 
-
-
-
+            // BLOCKER TIMERS
             if (leftBlockerEngaged){
                 if (leftBlockerTimer.milliseconds() > waitTime){
                     blockerPositionL = L_BLOCKER_DOWN;

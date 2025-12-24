@@ -16,6 +16,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
 @Autonomous(name = "Red Close Auto", group = "Autonomous")
@@ -37,6 +38,7 @@ public class redclose12 extends LinearOpMode{
         Launcher outtake1 = new Launcher(hardwareMap);
         Avocado blocker = new Avocado(hardwareMap);
         Pivot pivot = new Pivot(hardwareMap);
+        ElapsedTime velocityTimer = new ElapsedTime();
 
 
         int visionOutputPosition = 1;
@@ -141,7 +143,7 @@ public class redclose12 extends LinearOpMode{
 
         TrajectoryActionBuilder path3 = path2.endTrajectory()
                 .fresh()
-                .splineTo(new Vector2d(-27.0, 15), Math.toRadians(-120))
+                .splineTo(new Vector2d(-28, 15), Math.toRadians(-118))
                 .waitSeconds(trajectoryWait)
                 .lineToY(3, new TranslationalVelConstraint(17.0));
         Action trajectoryActionChosen3 = path3.build();
@@ -173,9 +175,9 @@ public class redclose12 extends LinearOpMode{
 
         TrajectoryActionBuilder path4 = toShooter.endTrajectory()
                 .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(-46, 24),Math.toRadians(-115)), 0)
+                .splineToLinearHeading(new Pose2d(new Vector2d(-46, 24),Math.toRadians(-114)), 0)
                 .waitSeconds(trajectoryWait)
-                .lineToY(5, new TranslationalVelConstraint(17.0));
+                .lineToY(4, new TranslationalVelConstraint(17.0));
 //                .lineToX(-68, new TranslationalVelConstraint(17.0));
 
         Action trajectoryActionChosen4 = path4.build();
@@ -192,6 +194,7 @@ public class redclose12 extends LinearOpMode{
                 new SequentialAction(
                         outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+60),
                         trajectoryActionChosen4,
+                        new SleepAction(0.1),
                         intake1.intakeOff(),
                         trajectoryActionToShooterR2,
                         new SleepAction(0.2),
