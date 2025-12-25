@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.TankDrive;
 import org.firstinspires.ftc.teamcode.Localizer.ThreeDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.Localizer.TwoDeadWheelLocalizer;
-@Disabled
+//@Disabled
 public final class ManualFeedbackTuner extends LinearOpMode {
     public static double DISTANCE = 64;
 
