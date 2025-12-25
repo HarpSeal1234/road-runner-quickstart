@@ -29,45 +29,27 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.ACTUAL_PIVOT_POSITION;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.CLOSE_OUTTAKE_VELOCITY;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.DRIVE_POWER;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.FAR_OUTTAKE_VELOCITY;
-import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.FAR_PIVOT_POSITION;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.INTAKE_POWER;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.INTAKE_ZERO_POWER;
-import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.L_BLOCKER_DOWN;
-import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.L_BLOCKER_UP;
-import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.R_BLOCKER_DOWN;
-import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.R_BLOCKER_UP;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.kD;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.kI;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.kP;
 
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-
-import java.util.List;
 
 
 /*
@@ -94,12 +76,13 @@ public class newRobotTele extends LinearOpMode {
     private DcMotor rightBack = null;
     private DcMotor leftBack = null;
     private DcMotorEx outtake1 = null;
-//    private DcMotorEx outtake2 = null;
-    private DcMotor intake1 = null;
+    //    private DcMotorEx outtake2 = null;
+    private DcMotorEx intake1 = null;
     private DcMotor intake2 = null;
-    double intakePower = 0.0;
-//    private Servo blockerR;
-//    private Servo blockerL;
+    double firstIntakePower = 0.0;
+    double secondIntakePower = 0.0;
+    private Servo blocker;
+    //    private Servo blockerL;
     double targetOuttakeVelocity = 0.0;
 
     // sensors
@@ -121,8 +104,8 @@ public class newRobotTele extends LinearOpMode {
 
 
     private double position = 5.0;
-    double blockerPositionR = R_BLOCKER_DOWN;
-    double blockerPositionL = L_BLOCKER_DOWN;
+    double blockPosition = 0.45;
+    double openPosition = 1;
 //    double pivotPosition = FAR_PIVOT_POSITION;
 
     NormalizedRGBA r_frontColor;
@@ -153,6 +136,8 @@ public class newRobotTele extends LinearOpMode {
     double r_backDistance = 0.0;
     double l_backDistance = 0.0;
     int waitTime = 250;
+    boolean intake1On = false;
+    double intake1Vel = 0.0;
     private Servo pivot;
 
     private static final boolean USE_WEBCAM = true;
@@ -182,7 +167,7 @@ public class newRobotTele extends LinearOpMode {
 
         initHardware();
 
-        intake1 = hardwareMap.get(DcMotor.class,"intake1");
+        intake1 = hardwareMap.get(DcMotorEx.class,"intake1");
         intake2 = hardwareMap.get(DcMotor.class,"intake2");
 /*
         blinkin = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
@@ -195,6 +180,8 @@ public class newRobotTele extends LinearOpMode {
 //        pivot.setPosition(Range.clip(pivotPosition, 0.0, 1.0));
 
         intake1.setDirection(DcMotorSimple.Direction.REVERSE);
+        intake1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intake1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intake1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         intake2.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -223,6 +210,7 @@ public class newRobotTele extends LinearOpMode {
             double leftBackPower = Range.clip((y - x + rx),-DRIVE_POWER,DRIVE_POWER);
             double rightFrontPower = Range.clip((y - x - rx),-DRIVE_POWER,DRIVE_POWER);
             double rightBackPower = Range.clip((y + x - rx),-DRIVE_POWER,DRIVE_POWER);
+            ElapsedTime intake1Timer = new ElapsedTime();
 
 //            telemetryAprilTag();
 //            telemetry.update();
@@ -259,71 +247,47 @@ public class newRobotTele extends LinearOpMode {
             } else if(gamepad2.right_bumper) {
                 outtake1.setVelocity(CLOSE_OUTTAKE_VELOCITY);
 //                outtake2.setVelocity(CLOSE_OUTTAKE_VELOCITY);
-            } /*else if (gamepad1.x) {
-                pivotPosition = ACTUAL_PIVOT_POSITION;
-                pivotPosition = Range.clip(pivotPosition, 0.0, 1.0);
-                pivot.setPosition(pivotPosition);
-            } else if (gamepad1.y) {
-                pivotPosition = FAR_PIVOT_POSITION;
-                pivotPosition = Range.clip(pivotPosition, 0.0, 1.0);
-                pivot.setPosition(pivotPosition);
-            }
-            */
-            /*else if (gamepad2.y) {
-                blockerPositionR = R_BLOCKER_DOWN;
-                blockerR.setPosition(Range.clip(blockerPositionR, 0.0 , R_BLOCKER_UP));
-            }*/ else if(gamepad1.dpad_left){
-                intakePower = -INTAKE_POWER;
-            } /*else if (gamepad2.dpad_right) {
+            } else if (gamepad2.dpad_right) {
                 outtake1.setVelocity(0.0);
-                outtake2.setVelocity(0.0);
-            } else if (gamepad2.b){
-                blockerPositionR = R_BLOCKER_UP;
-                blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
-                if (!rightBlockerEngaged) {
-                    rightBlockerEngaged = true;
-                    rightBlockerTimer.reset();
-                }
-            } else if (gamepad2.x) {
-                blockerPositionL = L_BLOCKER_UP;
-                blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
-                if (!leftBlockerEngaged) {
-                    leftBlockerEngaged = true;
-                    leftBlockerTimer.reset();
-                }
-            } else if (gamepad2.a) {
-                blockerPositionL = L_BLOCKER_UP;
-                blockerPositionR = R_BLOCKER_UP;
-                blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
-                blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
-                if (!leftBlockerEngaged) {
-                    leftBlockerEngaged = true;
-                    leftBlockerTimer.reset();
-                }
-                if (!rightBlockerEngaged) {
-                    rightBlockerEngaged = true;
-                    rightBlockerTimer.reset();
-                }
-            }*/ else if (gamepad2.y){
+            }
+            else if (gamepad2.y){
                 outtake1.setVelocity(-400);
             }
-            /*else if (gamepad2.b){
-                blockerPositionL = L_BLOCKER_DOWN;
-                blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
-            } */
-            else if (gamepad1.right_bumper) {
-                intakePower = INTAKE_POWER;
+
+            // INTAKE
+            if (gamepad1.dpad_left){
+                firstIntakePower = -INTAKE_POWER;
+                secondIntakePower = -INTAKE_POWER;
+            }  else if (gamepad1.right_bumper) {
+                firstIntakePower = INTAKE_POWER;
+                intake1Timer.reset();
+                intake1On = true;
             } else if (gamepad1.left_bumper){
-                intakePower = INTAKE_ZERO_POWER;
-            } else if (gamepad2.dpad_up){
-                targetOuttakeVelocity = targetOuttakeVelocity + step;
-                outtake1.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
-            }else if (gamepad2.dpad_down){
-                targetOuttakeVelocity = targetOuttakeVelocity - step;
-                outtake1.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
+                firstIntakePower = INTAKE_ZERO_POWER;
+                secondIntakePower = INTAKE_ZERO_POWER;
+                intake1On = false;
+            } else if (gamepad1.a){
+                secondIntakePower = 0.5;
             }
 
-/*
+            if (intake1On && (intake1Vel < 200) && (intake1Timer.seconds() > 0.3)){
+                firstIntakePower = 0.0;
+//                intake1.setPower(0.0);
+                intake1On = false;
+                intake1Timer.reset();
+            }
+
+            intake1Vel = intake1.getVelocity();
+
+            if (gamepad1.b){
+                blocker.setPosition(blockPosition);
+            }
+            else if (gamepad1.x){
+                blocker.setPosition(openPosition);
+            }
+
+
+            /*
             if (leftBlockerEngaged){
                 if (leftBlockerTimer.milliseconds() > waitTime){
                     blockerPositionL = L_BLOCKER_DOWN;
@@ -342,8 +306,8 @@ public class newRobotTele extends LinearOpMode {
 */
 
 
-            intake1.setPower(intakePower);
-            intake2.setPower(intakePower);
+            intake1.setPower(firstIntakePower);
+            intake2.setPower(secondIntakePower);
             telemetry();
 
 //            checkColor(r_frontDistance,r_frontColor.red,r_frontColor.green,r_frontHasBall,r_frontGreen);
@@ -371,14 +335,14 @@ public class newRobotTele extends LinearOpMode {
             telemetry.update();
 //            blinkin.setPattern(blinkinPattern);
         }
-        visionPortal.close();
+//        visionPortal.close();
 
     }
     public void initHardware() {
         initMotorOne(kP, kI, kD, F, position);
 //        initMotorTwo(kP, kI, kD, F, position);
         initDriveMotors();
-//        initBlockers();
+        initBlocker();
 //        initColorSensors();
     }
     public void initDriveMotors(){
@@ -397,13 +361,11 @@ public class newRobotTele extends LinearOpMode {
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
-/*
-    public void initBlockers(){
-        blockerR = hardwareMap.get(Servo.class, "blockerR");
-        blockerL = hardwareMap.get(Servo.class, "blockerL");
-        blockerR.setPosition(Range.clip(blockerPositionR, 0.0, 1.0));
-        blockerL.setPosition(Range.clip(blockerPositionL, 0.0, 1.0));
-    }*/
+
+    public void initBlocker(){
+        blocker = hardwareMap.get(Servo.class, "blocker");
+        blocker.setPosition(Range.clip(blockPosition, 0.0, 1.0));
+    }
 
     private void initMotorOne(double kP, double kI, double kD, double F, double position) {
         outtake1  = hardwareMap.get(DcMotorEx.class, "outtake1");
@@ -505,31 +467,31 @@ public class newRobotTele extends LinearOpMode {
         }
 
     }
-/*
-    private int checkBallINT(double distance, int hasBall){
-        if (distance < 2.0) {
-            hasBall = 1;
-            return hasBall;
-        } else {
-            hasBall = 0;
-            return hasBall;
-        }
-
-    }
-    private void checkColor(double distance, double red, double green, boolean hasBall, boolean isGreen){
-        if (distance < 4.0) {
-            hasBall = true;
-            if ((green / red) > 2) {
-                isGreen = true;
-            } else if ((green / red) < 2){
-                isGreen = false;
+    /*
+        private int checkBallINT(double distance, int hasBall){
+            if (distance < 2.0) {
+                hasBall = 1;
+                return hasBall;
+            } else {
+                hasBall = 0;
+                return hasBall;
             }
-        } else {
-            hasBall = false;
-        }
-    }
 
- */
+        }
+        private void checkColor(double distance, double red, double green, boolean hasBall, boolean isGreen){
+            if (distance < 4.0) {
+                hasBall = true;
+                if ((green / red) > 2) {
+                    isGreen = true;
+                } else if ((green / red) < 2){
+                    isGreen = false;
+                }
+            } else {
+                hasBall = false;
+            }
+        }
+
+     */
     /*
     private void telemetryAprilTag() {
 
@@ -656,11 +618,12 @@ public class newRobotTele extends LinearOpMode {
        */
     public void telemetry() {
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Intake Power", "Intake Power: " + intakePower);
-//        telemetry.addData("blockerPosLEFT", "Position: " + blockerPositionL);
+        telemetry.addData("Intake Power", "Intake Power: " + firstIntakePower);
+        telemetry.addData("blockerPos", "Position: " + blockPosition);
 //        telemetry.addData("blockerPosRIGHT", "Position: " + blockerPositionR);
 //        telemetry.addData("Current Position", "Position: " + pivotPosition);
         telemetry.addData("Target Velocity", targetOuttakeVelocity);
+        telemetry.addData("Intake Vel", intake1Vel);
         telemetry.addData("Outtake 1 power", outtake1.getPower());
 //        telemetry.addData("Outtake 2 power", outtake2.getPower());
         telemetry.addData("Outtake 1 Velocity", outtake1.getVelocity());
