@@ -65,7 +65,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="motor2 Tele baby robot uu", group="! Linear OpMode")
+@TeleOp(name="2 motor Tele baby robot uu", group="! Linear OpMode")
 public class othermotortest extends LinearOpMode {
 
     // Declare OpMode members.
@@ -372,7 +372,7 @@ public class othermotortest extends LinearOpMode {
     private void initMotorOne(double kP, double kI, double kD, double F, double position) {
         outtake1  = hardwareMap.get(DcMotorEx.class, "outtake2");
 //        outtake1.setDirection(DcMotor.Direction.FORWARD); /// NORMAL FORWARD -- 12.1 changed
-        outtake1.setDirection(DcMotorEx.Direction.REVERSE);
+        outtake1.setDirection(DcMotorEx.Direction.FORWARD);
         outtake1.setPower(outtakeZeroPower);
         outtake1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         outtake1.setVelocityPIDFCoefficients(kP, kI, kD, F);

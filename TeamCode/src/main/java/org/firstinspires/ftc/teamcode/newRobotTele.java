@@ -65,7 +65,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Tele baby robot uu", group="! Linear OpMode")
+@TeleOp(name="Tele baby robot uv", group="! Linear OpMode")
 public class newRobotTele extends LinearOpMode {
 
     // Declare OpMode members.
@@ -76,7 +76,7 @@ public class newRobotTele extends LinearOpMode {
     private DcMotor rightBack = null;
     private DcMotor leftBack = null;
     private DcMotorEx outtake1 = null;
-    //    private DcMotorEx outtake2 = null;
+        private DcMotorEx outtake2 = null;
     private DcMotorEx intake1 = null;
     private DcMotor intake2 = null;
     double firstIntakePower = 0.0;
@@ -106,7 +106,8 @@ public class newRobotTele extends LinearOpMode {
 
 
     private double position = 5.0;
-    double blockPosition = 0.45;
+    double blockPosition = 0.5
+            ;
     double openPosition = 1;
 //    double pivotPosition = FAR_PIVOT_POSITION;
 
@@ -245,15 +246,17 @@ public class newRobotTele extends LinearOpMode {
             //controls
             if(gamepad2.left_bumper) {
                 outtake1.setVelocity(FAR_OUTTAKE_VELOCITY);
-//                outtake2.setVelocity(FAR_OUTTAKE_VELOCITY);
+                outtake2.setVelocity(FAR_OUTTAKE_VELOCITY);
             } else if(gamepad2.right_bumper) {
                 outtake1.setVelocity(CLOSE_OUTTAKE_VELOCITY);
-//                outtake2.setVelocity(CLOSE_OUTTAKE_VELOCITY);
+                outtake2.setVelocity(CLOSE_OUTTAKE_VELOCITY);
             } else if (gamepad2.dpad_right) {
                 outtake1.setVelocity(0.0);
+                outtake2.setVelocity(0.0);
             }
             else if (gamepad2.y){
                 outtake1.setVelocity(-400);
+                outtake2.setVelocity(-400);
             }
 
             // INTAKE
@@ -342,7 +345,7 @@ public class newRobotTele extends LinearOpMode {
     }
     public void initHardware() {
         initMotorOne(kP, kI, kD, F, position);
-//        initMotorTwo(kP, kI, kD, F, position);
+        initMotorTwo(kP, kI, kD, F, position);
         initDriveMotors();
         initBlocker();
 //        initColorSensors();
@@ -371,7 +374,6 @@ public class newRobotTele extends LinearOpMode {
 
     private void initMotorOne(double kP, double kI, double kD, double F, double position) {
         outtake1  = hardwareMap.get(DcMotorEx.class, "outtake1");
-//        outtake1.setDirection(DcMotor.Direction.FORWARD); /// NORMAL FORWARD -- 12.1 changed
         outtake1.setDirection(DcMotorEx.Direction.FORWARD);
         outtake1.setPower(outtakeZeroPower);
         outtake1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -381,10 +383,9 @@ public class newRobotTele extends LinearOpMode {
         outtake1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         outtake1.setVelocity(targetOuttakeVelocity);
     }
-    /*
+
     private void initMotorTwo(double kP, double kI, double kD, double F, double position) {
         outtake2  = hardwareMap.get(DcMotorEx.class, "outtake2");
-//        outtake1.setDirection(DcMotor.Direction.FORWARD); /// NORMAL FORWARD -- 12.1 changed
         outtake2.setDirection(DcMotorEx.Direction.REVERSE);
         outtake2.setPower(outtakeZeroPower);
         outtake2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -393,7 +394,7 @@ public class newRobotTele extends LinearOpMode {
         outtake2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         outtake2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         outtake2.setVelocity(targetOuttakeVelocity);
-    }
+    }/*
     private void initColorSensors() {
         // color sensor
         r_frontColorSensor = hardwareMap.get(NormalizedColorSensor.class, "r_frontColorSensor");
@@ -627,9 +628,9 @@ public class newRobotTele extends LinearOpMode {
         telemetry.addData("Target Velocity", targetOuttakeVelocity);
         telemetry.addData("Intake Vel", intake1Vel);
         telemetry.addData("Outtake 1 power", outtake1.getPower());
-//        telemetry.addData("Outtake 2 power", outtake2.getPower());
+        telemetry.addData("Outtake 2 power", outtake2.getPower());
         telemetry.addData("Outtake 1 Velocity", outtake1.getVelocity());
-//        telemetry.addData("Outtake 2 Velocity", outtake2.getVelocity());
+        telemetry.addData("Outtake 2 Velocity", outtake2.getVelocity());
         telemetry.addData("F", F);
         telemetry.addData("kP", kP);
         telemetry.addData("kI", kI);
