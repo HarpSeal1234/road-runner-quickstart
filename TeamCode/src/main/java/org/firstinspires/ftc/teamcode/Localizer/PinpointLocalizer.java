@@ -16,8 +16,8 @@ import java.util.Objects;
 @Config
 public final class PinpointLocalizer implements Localizer {
     public static class Params {
-        public double parYTicks =  0.0; // -
-        public double perpXTicks = 0.0; // -
+        public double parYTicks =  -1335.9392696524; // -1331.3802564104265,-1344.5568808953103,-1341.4497783394065,-1326.3701629644402
+        public double perpXTicks = -2002.4734257565; // -2003.7175517444496,-2002.0063305804115,-2001.3339034912756,-2002.835917209797
     }
 
     public static Params PARAMS = new Params();
