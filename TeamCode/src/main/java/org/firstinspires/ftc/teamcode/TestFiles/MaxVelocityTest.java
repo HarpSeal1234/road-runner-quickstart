@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 //1620rpm - 2700 max velocity
 //6000rpm - 2800 max velocity
-@Disabled
+//@Disabled
 @TeleOp(name="Max Velocity Test")
 public class MaxVelocityTest extends LinearOpMode {
 //Motor Variables
