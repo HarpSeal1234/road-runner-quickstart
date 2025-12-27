@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Config
-@Disabled
+//@Disabled
 @Autonomous(name = "spline 0", group = "Autonomous")
 
 public class splineTangetn0 extends LinearOpMode{
@@ -32,7 +32,7 @@ public class splineTangetn0 extends LinearOpMode{
         // TURN TO SHOOT
         TrajectoryActionBuilder path2 = drive.actionBuilder(initialPose)
                 .fresh()
-                .splineToLinearHeading(new Pose2d(-24,24,Math.toRadians(5)),0);
+                .splineToLinearHeading(new Pose2d(24,-24,Math.toRadians(5)),0);
         Action trajectoryActionChosen2 = path2.build();
 
         if (isStopRequested()) return;

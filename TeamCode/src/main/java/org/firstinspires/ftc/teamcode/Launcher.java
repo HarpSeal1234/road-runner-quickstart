@@ -48,7 +48,7 @@ public class Launcher {
     private double position = 5.0;
     public Launcher(HardwareMap hardwareMap){
         outtake1 = hardwareMap.get(DcMotorEx.class,"outtake1");
-        outtake1.setDirection(DcMotorEx.Direction.REVERSE);
+        outtake1.setDirection(DcMotorEx.Direction.FORWARD);
         outtake1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
         outtake1.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         outtake1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
