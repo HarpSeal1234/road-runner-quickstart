@@ -1,6 +1,7 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.R1Auto;
 
 // RR-specific imports
+
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.CLOSE_OUTTAKE_VELOCITY;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.trajectoryWait;
 
@@ -15,21 +16,33 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Config
-@Autonomous(name = "Red Close Auto", group = "Autonomous")
+import org.firstinspires.ftc.teamcode.AprilTagDetector;
+import org.firstinspires.ftc.teamcode.Avocado;
+import org.firstinspires.ftc.teamcode.BallManager;
+import org.firstinspires.ftc.teamcode.Intake;
+import org.firstinspires.ftc.teamcode.Launcher;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Pivot;
 
-public class redclose12 extends LinearOpMode{
+@Config
+@Disabled
+@Autonomous(name = "Blue Close Auto", group = "Autonomous")
+
+public class BlueClosePathOnly_Actions extends LinearOpMode{
     private static final boolean USE_WEBCAM = true;
 
     public MecanumDrive drive ;
+//    private double trajectoryWait = 0.3;
+
+    public double shootYpos = -35;
     public void reportPosition(){
         telemetry.addData("Current Position", this.drive.localizer.getPose());
         telemetry.update();
     }
     public void runOpMode() {
-        // instantiate your MecanumDrive at a particular pose.
         Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(0));
         drive = new MecanumDrive(hardwareMap, initialPose);
         AprilTagDetector aprilTagDetector = new AprilTagDetector(hardwareMap);
@@ -37,30 +50,82 @@ public class redclose12 extends LinearOpMode{
         Launcher outtake1 = new Launcher(hardwareMap);
         Avocado blocker = new Avocado(hardwareMap);
         Pivot pivot = new Pivot(hardwareMap);
-
+        BallManager ballManager = new BallManager(hardwareMap);
 
         int visionOutputPosition = 1;
+
+        // DRIVE TO POSITION
+        TrajectoryActionBuilder path1 = drive.actionBuilder(initialPose)
+                .setTangent(0.0)
+                .splineToConstantHeading(new Vector2d(-24, shootYpos), 0)
+                .waitSeconds(trajectoryWait);
+        Action trajectoryActionChosen1 = path1.build();
+        pivot.closePivot();
 
         waitForStart();
         if (isStopRequested()) return;
 
-        TrajectoryActionBuilder path1 = drive.actionBuilder(initialPose)
-                .setTangent(0.0)
-                .splineToConstantHeading(new Vector2d(-24, 36), 0)
-                .waitSeconds(trajectoryWait);
-        pivot.closePivot();
-        Action trajectoryActionChosen1 = path1.build();
+        Actions.runBlocking(new ParallelAction(outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+200), trajectoryActionChosen1,aprilTagDetector.detectAprilTag()));
 
-        Actions.runBlocking(new ParallelAction(outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+200), trajectoryActionChosen1));
-        int aprilTagId = aprilTagDetector.fetchAprilTag();
+        int aprilTagId = aprilTagDetector.getDesiredTagId();
+        int ballNumber;
+        BallManager.DecodeBallColor rfColor = ballManager.detectRightFrontColor();
+        BallManager.DecodeBallColor rbColor = ballManager.detectRightBackColor();
+        BallManager.DecodeBallColor lfColor = ballManager.detectLeftFrontColor();
+        BallManager.DecodeBallColor lbColor = ballManager.detectLeftBackColor();
         telemetry.addData("April Tag Id", aprilTagId);
+        telemetry.addData("rf", rfColor);
+        telemetry.addData("rb", rbColor);
+        telemetry.addData("lf", lfColor);
+        telemetry.addData("lb", lbColor);
+//        telemetry.addData("number of balls", ballNumber);
+
         telemetry.update();
 
+        // TURN TO SHOOT
         TrajectoryActionBuilder path2 = path1.endTrajectory()
                 .fresh()
-                .turn(Math.toRadians(-45))
-                .waitSeconds(trajectoryWait);
+                .turn(Math.toRadians(45));
         Action trajectoryActionChosen2 = path2.build();
+
+        // TRAVEL TO FIRST SPIKE MARK
+        TrajectoryActionBuilder path3 = path2.endTrajectory()
+                .fresh()
+                .splineTo(new Vector2d(-29.0, -15), Math.toRadians(120))
+                .waitSeconds(trajectoryWait)
+                .lineToY(-3, new TranslationalVelConstraint(17.0))
+                .waitSeconds(trajectoryWait);
+        Action trajectoryActionChosen3 = path3.build();
+
+        // TRAVEL BACK TO SHOOTER
+        TrajectoryActionBuilder toShooter = path3.endTrajectory()
+                .fresh()
+                .splineToLinearHeading(new Pose2d(new Vector2d(-24, shootYpos),Math.toRadians(54)), 0) // like a z facing towards 90
+                .waitSeconds(trajectoryWait);
+        Action trajectoryActionToShooterR1 = toShooter.build();
+
+        // TRAVEL TO SECOND SPIKE MARK
+        TrajectoryActionBuilder path4 = toShooter.endTrajectory()
+                .fresh()
+                .splineToLinearHeading(new Pose2d(new Vector2d(-49, -24),Math.toRadians(115)), 0)
+                .waitSeconds(trajectoryWait)
+                .lineToY(-5, new TranslationalVelConstraint(16.0))
+                .waitSeconds(trajectoryWait);
+        Action trajectoryActionChosen4 = path4.build();
+
+        // TRAVEL BACK TO SHOOTER
+        TrajectoryActionBuilder toShooter2 = path4.endTrajectory()
+                .fresh()
+                .splineToLinearHeading(new Pose2d(new Vector2d(-24, shootYpos),Math.toRadians(57)), 0)
+                .waitSeconds(trajectoryWait);
+        Action trajectoryActionToShooterR2 = toShooter2.build();
+
+        // LEAVE
+        TrajectoryActionBuilder leavePath = toShooter2.endTrajectory()
+                .fresh()
+                .splineToConstantHeading(new Vector2d(-24,-10),0.0)
+                .waitSeconds(trajectoryWait);
+        Action leave = leavePath.build();
 
         if (isStopRequested()) return;
 
@@ -79,7 +144,7 @@ public class redclose12 extends LinearOpMode{
                             blocker.r_Engaged(),
                             new SleepAction(0.2),
                             blocker.r_Disengaged(),
-                            new SleepAction(0.3)
+                            new SleepAction(1)
                     )
             );
 
@@ -100,7 +165,7 @@ public class redclose12 extends LinearOpMode{
 //                            new ParallelAction(blocker.r_Engaged(), blocker.l_Disengaged()),
                             new SleepAction(0.2),
                             blocker.r_Disengaged(),
-                            new SleepAction(0.3)
+                            new SleepAction(1)
                     )
             );
         } else { //PPG
@@ -119,11 +184,22 @@ public class redclose12 extends LinearOpMode{
                             new ParallelAction(blocker.l_Engaged(), blocker.r_Disengaged()),
                             new SleepAction(0.3),
                             blocker.l_Disengaged(),
-                            new SleepAction(0.3)
+                            new SleepAction(1)
                     ) // launch 0.2 disengage 0.5 engage 0.2 diengate
             );
         }
-        /*
+        ballNumber = ballManager.getNumOfBalls();
+        if (ballNumber > 0) {
+            Actions.runBlocking(
+                    new SequentialAction(
+                            new ParallelAction(blocker.r_Engaged()), blocker.l_Engaged(),
+                            new SleepAction(0.2),
+                            new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged())
+                    )
+            );
+        }
+
+         /*
         Actions.runBlocking(
                 new SequentialAction(
                         outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+90),
@@ -139,19 +215,6 @@ public class redclose12 extends LinearOpMode{
                 )
         );*/
 
-        TrajectoryActionBuilder path3 = path2.endTrajectory()
-                .fresh()
-                .splineTo(new Vector2d(-27.0, 15), Math.toRadians(-120))
-                .waitSeconds(trajectoryWait)
-                .lineToY(3, new TranslationalVelConstraint(17.0));
-        Action trajectoryActionChosen3 = path3.build();
-
-        TrajectoryActionBuilder toShooter = path3.endTrajectory()
-                .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(-24, 34),Math.toRadians(-54)), 0); // like a z facing towards 90
-//                .waitSeconds(0.6);
-        Action trajectoryActionToShooterR1 = toShooter.build();
-
         Actions.runBlocking(
                 new SequentialAction(
                         trajectoryActionChosen3,
@@ -162,31 +225,12 @@ public class redclose12 extends LinearOpMode{
                         new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
                         new SleepAction(0.2),
                         new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()), // purple ball #1 end
-                        new SleepAction(0.6),
+                        new SleepAction(0.5),
                         new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
                         new SleepAction(0.4),
                         new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()) // purple ball #1 end
                 )
         );
-
-        reportPosition();
-
-        TrajectoryActionBuilder path4 = toShooter.endTrajectory()
-                .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(-46, 24),Math.toRadians(-115)), 0)
-                .waitSeconds(trajectoryWait)
-                .lineToY(5, new TranslationalVelConstraint(17.0));
-//                .lineToX(-68, new TranslationalVelConstraint(17.0));
-
-        Action trajectoryActionChosen4 = path4.build();
-
-        TrajectoryActionBuilder toShooter2 = path4.endTrajectory()
-                .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(-24, 36),Math.toRadians(-57)), 0)
-                .waitSeconds(trajectoryWait);
-
-        Action trajectoryActionToShooterR2 = toShooter2.build();
-
 
         Actions.runBlocking(
                 new SequentialAction(
@@ -198,27 +242,13 @@ public class redclose12 extends LinearOpMode{
                         new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
                         new SleepAction(0.2),
                         new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged(),intake1.intakeOn()), // purple ball #1 end
-                        new SleepAction(0.7),
+                        new SleepAction(0.5),
                         new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
                         new SleepAction(0.8),
                         new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()), // purple ball #1 end
-                        new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged())// purple ball #1 end
+                        leave
                 )
         );
 
-        TrajectoryActionBuilder leave = toShooter2.endTrajectory()
-                .fresh()
-                .strafeTo(new Vector2d(-24,5));
-//                .splineToConstantHeading(new Vector2d(-24,10),0);
-        Action leaveAction = leave.build();
-
-        Actions.runBlocking(
-                new SequentialAction(
-                        leaveAction
-                )
-        );
-        reportPosition();
-        sleep(500);
     }
 }
-

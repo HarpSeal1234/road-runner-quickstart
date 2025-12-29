@@ -5,8 +5,8 @@ public class OrcaRoboticsConstants {
     public final static double trajectoryWait = 0.3;
 
     // OUTTAKE
-    public final static int FAR_OUTTAKE_VELOCITY = 1400;
-    public final static int CLOSE_OUTTAKE_VELOCITY = 1100;
+    public final static int FAR_OUTTAKE_VELOCITY = 1500;
+    public final static int CLOSE_OUTTAKE_VELOCITY = 1200;
 
     // DRIVE POWER
     public final static double DRIVE_POWER = 0.7;

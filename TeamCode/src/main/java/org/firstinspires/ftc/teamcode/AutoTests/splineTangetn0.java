@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -32,7 +33,9 @@ public class splineTangetn0 extends LinearOpMode{
         // TURN TO SHOOT
         TrajectoryActionBuilder path2 = drive.actionBuilder(initialPose)
                 .fresh()
-                .splineToLinearHeading(new Pose2d(24,-24,Math.toRadians(5)),0);
+                .splineToConstantHeading(new Vector2d(48,-48),0)
+//                .splineToLinearHeading(new Pose2d(24,-24,Math.toRadians(5)),0)
+                ;
         Action trajectoryActionChosen2 = path2.build();
 
         if (isStopRequested()) return;

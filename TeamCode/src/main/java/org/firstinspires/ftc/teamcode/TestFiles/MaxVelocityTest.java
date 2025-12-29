@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
 //1620rpm - 2700 max velocity
@@ -38,8 +39,8 @@ public class MaxVelocityTest extends LinearOpMode {
     }
 //initialize motorOne
     public void initMotorOne() {
-        outtake1 = hardwareMap.get(DcMotorEx.class, "outtake1");
-        outtake1.setDirection(DcMotor.Direction.FORWARD);
+        outtake1 = hardwareMap.get(DcMotorEx.class, "outtake2");
+        outtake1.setDirection(DcMotor.Direction.REVERSE);
         outtake1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         outtake1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }

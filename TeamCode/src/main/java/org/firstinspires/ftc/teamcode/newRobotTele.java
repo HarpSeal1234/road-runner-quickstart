@@ -106,7 +106,7 @@ public class newRobotTele extends LinearOpMode {
 
 
     private double position = 5.0;
-    double blockPosition = 0.5
+    double blockPosition = 0.6;
             ;
     double openPosition = 1;
 //    double pivotPosition = FAR_PIVOT_POSITION;
@@ -246,9 +246,13 @@ public class newRobotTele extends LinearOpMode {
             //controls
             if(gamepad2.left_bumper) {
                 outtake1.setVelocity(FAR_OUTTAKE_VELOCITY);
+                outtake1.setVelocityPIDFCoefficients(4.0030, 0, 0, 14.2410);
+                outtake2.setVelocityPIDFCoefficients(4.0030, 0, 0, 14.2410);
                 outtake2.setVelocity(FAR_OUTTAKE_VELOCITY);
             } else if(gamepad2.right_bumper) {
                 outtake1.setVelocity(CLOSE_OUTTAKE_VELOCITY);
+                outtake1.setVelocityPIDFCoefficients(3.0, 0, 0, 14.543);
+                outtake2.setVelocityPIDFCoefficients(3.0, 0, 0, 14.543);
                 outtake2.setVelocity(CLOSE_OUTTAKE_VELOCITY);
             } else if (gamepad2.dpad_right) {
                 outtake1.setVelocity(0.0);
@@ -377,7 +381,7 @@ public class newRobotTele extends LinearOpMode {
         outtake1.setDirection(DcMotorEx.Direction.FORWARD);
         outtake1.setPower(outtakeZeroPower);
         outtake1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        outtake1.setVelocityPIDFCoefficients(kP, kI, kD, F);
+        outtake1.setVelocityPIDFCoefficients(4.0030, 0, 0, 14.2410);
         outtake1.setPositionPIDFCoefficients(position);
         outtake1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         outtake1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
