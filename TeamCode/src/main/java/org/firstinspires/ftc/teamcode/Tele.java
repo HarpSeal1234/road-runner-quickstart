@@ -96,7 +96,7 @@ public class Tele extends LinearOpMode {
     private DcMotor leftBack = null;
     private DcMotorEx outtake1 = null;
     private DcMotorEx outtake2 = null;
-    private DcMotor intake1 = null;
+    private DcMotorEx intake1 = null;
     double intakePower = 0.0;
     private Servo blockerR;
     private Servo blockerL;
@@ -153,6 +153,8 @@ public class Tele extends LinearOpMode {
     double r_backDistance = 0.0;
     double l_backDistance = 0.0;
     int waitTime = 250;
+    double intake1Vel = 0;
+    boolean intakeOn = false;
     private Servo pivot;
     private double targetv = 0;
     boolean autoUpdate = false;
@@ -185,7 +187,6 @@ public class Tele extends LinearOpMode {
 
         initHardware();
 
-        intake1 = hardwareMap.get(DcMotor.class,"intake1");
 
         blinkin = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
         blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.CP1_BREATH_SLOW;
@@ -194,8 +195,7 @@ public class Tele extends LinearOpMode {
         pivot = hardwareMap.get(Servo.class, "pivot");
         pivot.setPosition(Range.clip(pivotPosition, 0.0, 1.0));
 
-        intake1.setDirection(DcMotorSimple.Direction.FORWARD);
-        intake1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         // Wait for the game to start (driver presses START)
         float step = 0.001f;
@@ -206,7 +206,9 @@ public class Tele extends LinearOpMode {
         ElapsedTime leftBlockerTimer = new ElapsedTime();
         ElapsedTime patternTimer = new ElapsedTime();
         ElapsedTime velocityTimer = new ElapsedTime();
+        ElapsedTime intakeTimer = new ElapsedTime();
         double lastTargetV = 0;
+
 
 
         waitForStart();
@@ -223,7 +225,7 @@ public class Tele extends LinearOpMode {
             double rightFrontPower = Range.clip((y - x - rx),-DRIVE_POWER,DRIVE_POWER);
             double rightBackPower = Range.clip((y + x - rx),-DRIVE_POWER,DRIVE_POWER);
             targetv = Range.clip((((1450.0-1100)/(130-42))*(getRobotToGoalDistance()-42)+1100),900,FAR_OUTTAKE_VELOCITY);
-
+            intake1Vel = intake1.getVelocity();
 
 //            telemetryAprilTag();
 //            telemetry.update();
@@ -319,11 +321,22 @@ public class Tele extends LinearOpMode {
             // INTAKE
             if (gamepad1.right_bumper) {
                 intakePower = INTAKE_POWER;
+                intakeTimer.reset();
+                intakeOn = true;
             } else if (gamepad1.left_bumper){
                 intakePower = INTAKE_ZERO_POWER;
+                intakeOn = false;
             }
             if(gamepad1.dpad_left){
                 intakePower = -INTAKE_POWER;
+            }
+            intake1Vel = intake1.getVelocity();
+
+            if (intakeOn && (intake1Vel < 200) && (intakeTimer.seconds() > 1)){
+                intakePower = 0;
+                intakeOn = false;
+                intakeTimer.reset();
+//                telemetry.addData("intake", "INTAKEOFF!");
             }
 
             // BLOCKER TIMERS
@@ -411,7 +424,14 @@ public class Tele extends LinearOpMode {
         initMotorTwo(kP, kI, kD, F, position);
         initDriveMotors();
         initBlockers();
+        initIntake();
         initColorSensors();
+    }
+    public void initIntake(){
+        intake1 = hardwareMap.get(DcMotorEx.class,"intake1");
+        intake1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        intake1.setDirection(DcMotorEx.Direction.FORWARD);
+        intake1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
     }
     public void initDriveMotors(){
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
@@ -710,6 +730,7 @@ public class Tele extends LinearOpMode {
         telemetry.addData("blockerPosRIGHT", "Position: " + blockerPositionR);
         telemetry.addData("Current Position", "Position: " + pivotPosition);
         telemetry.addData("Target Velocity", targetv);
+        telemetry.addData("INTAKE Velocity", intake1.getVelocity());
         telemetry.addData("Outtake 1 power", outtake1.getPower());
         telemetry.addData("Outtake 2 power", outtake2.getPower());
         telemetry.addData("Outtake 1 Velocity", outtake1.getVelocity());
