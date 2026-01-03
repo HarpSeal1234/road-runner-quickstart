@@ -32,7 +32,6 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.CLOSE_OUTTAKE_VELOCITY;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.DRIVE_POWER;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.FAR_OUTTAKE_VELOCITY;
-import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.INTAKE_POWER;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.INTAKE_ZERO_POWER;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.kD;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.kI;
@@ -75,10 +74,10 @@ public class newRobotTele extends LinearOpMode {
     private DcMotor leftFront = null;
     private DcMotor rightBack = null;
     private DcMotor leftBack = null;
-    private DcMotorEx outtake1 = null;
-        private DcMotorEx outtake2 = null;
-    private DcMotorEx intake1 = null;
-    private DcMotor intake2 = null;
+    private DcMotorEx rightOuttake = null;
+        private DcMotorEx leftOuttake = null;
+    private DcMotorEx frontIntake = null;
+    private DcMotor backIntake = null;
     double firstIntakePower = 0.0;
     double secondIntakePower = 0.0;
     double firstIntake = 0.9;
@@ -170,8 +169,8 @@ public class newRobotTele extends LinearOpMode {
 
         initHardware();
 
-        intake1 = hardwareMap.get(DcMotorEx.class,"intake1");
-        intake2 = hardwareMap.get(DcMotor.class,"intake2");
+        frontIntake = hardwareMap.get(DcMotorEx.class,"frontIntake");
+        backIntake = hardwareMap.get(DcMotor.class,"backIntake");
 /*
         blinkin = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
         blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.CP1_BREATH_SLOW;
@@ -182,13 +181,13 @@ public class newRobotTele extends LinearOpMode {
 //        pivot = hardwareMap.get(Servo.class, "pivot");
 //        pivot.setPosition(Range.clip(pivotPosition, 0.0, 1.0));
 
-        intake1.setDirection(DcMotorSimple.Direction.REVERSE);
-        intake1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        intake1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        intake1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontIntake.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontIntake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontIntake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        intake2.setDirection(DcMotorSimple.Direction.REVERSE);
-        intake2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backIntake.setDirection(DcMotorSimple.Direction.FORWARD);
+        backIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Wait for the game to start (driver presses START)
         float step = 0.001f;
@@ -245,38 +244,36 @@ public class newRobotTele extends LinearOpMode {
 
             //controls
             if(gamepad2.left_bumper) {
-                outtake1.setVelocity(FAR_OUTTAKE_VELOCITY);
-                outtake1.setVelocityPIDFCoefficients(4.0030, 0, 0, 14.2410);
-                outtake2.setVelocityPIDFCoefficients(4.0030, 0, 0, 14.2410);
-                outtake2.setVelocity(FAR_OUTTAKE_VELOCITY);
+                rightOuttake.setVelocity(FAR_OUTTAKE_VELOCITY);
+//                rightOuttake.setVelocityPIDFCoefficients(4.0030, 0, 0, 14.2410);
+//                leftOuttake.setVelocityPIDFCoefficients(4.0030, 0, 0, 14.2410);
+                leftOuttake.setVelocity(FAR_OUTTAKE_VELOCITY);
             } else if(gamepad2.right_bumper) {
-                outtake1.setVelocity(CLOSE_OUTTAKE_VELOCITY);
-                outtake1.setVelocityPIDFCoefficients(3.0, 0, 0, 14.543);
-                outtake2.setVelocityPIDFCoefficients(3.0, 0, 0, 14.543);
-                outtake2.setVelocity(CLOSE_OUTTAKE_VELOCITY);
+                rightOuttake.setVelocity(CLOSE_OUTTAKE_VELOCITY);
+//                rightOuttake.setVelocityPIDFCoefficients(3.0, 0, 0, 14.543);
+//                leftOuttake.setVelocityPIDFCoefficients(3.0, 0, 0, 14.543);
+                leftOuttake.setVelocity(CLOSE_OUTTAKE_VELOCITY);
             } else if (gamepad2.dpad_right) {
-                outtake1.setVelocity(0.0);
-                outtake2.setVelocity(0.0);
-            }
-            else if (gamepad2.y){
-                outtake1.setVelocity(-400);
-                outtake2.setVelocity(-400);
+                rightOuttake.setVelocity(0.0);
+                leftOuttake.setVelocity(0.0);
             }
 
             // INTAKE
             if (gamepad1.dpad_left){
-                firstIntakePower = -firstIntake;
-                secondIntakePower = -secondIntake;
+                frontIntake.setPower(-0.7);
+//                firstIntakePower = -firstIntake;
+//                secondIntakePower = -secondIntake;
             }  else if (gamepad1.right_bumper) {
-                firstIntakePower = firstIntake;
+                frontIntake.setPower(0.7);
                 intake1Timer.reset();
                 intake1On = true;
             } else if (gamepad1.left_bumper){
-                firstIntakePower = INTAKE_ZERO_POWER;
-                secondIntakePower = INTAKE_ZERO_POWER;
+               frontIntake.setPower(0.0);
                 intake1On = false;
             } else if (gamepad1.a){
-                secondIntakePower = secondIntake;
+                backIntake.setPower(0.5);
+            } else if (gamepad1.b){
+                backIntake.setPower(0.0);
             }
 
             if (intake1On && (intake1Vel < 200) && (intake1Timer.seconds() > 0.3)){
@@ -286,16 +283,7 @@ public class newRobotTele extends LinearOpMode {
                 intake1Timer.reset();
             }
 
-            intake1Vel = intake1.getVelocity();
-
-            if (gamepad1.b){
-                blocker.setPosition(blockPosition);
-            }
-            else if (gamepad1.x){
-                blocker.setPosition(openPosition);
-            }
-
-
+            intake1Vel = frontIntake.getVelocity();
             /*
             if (leftBlockerEngaged){
                 if (leftBlockerTimer.milliseconds() > waitTime){
@@ -315,8 +303,8 @@ public class newRobotTele extends LinearOpMode {
 */
 
 
-            intake1.setPower(firstIntakePower);
-            intake2.setPower(secondIntakePower);
+//            frontIntake.setPower(firstIntakePower);
+//            backIntake.setPower(secondIntakePower);
             telemetry();
 
 //            checkColor(r_frontDistance,r_frontColor.red,r_frontColor.green,r_frontHasBall,r_frontGreen);
@@ -351,7 +339,7 @@ public class newRobotTele extends LinearOpMode {
         initMotorOne(kP, kI, kD, F, position);
         initMotorTwo(kP, kI, kD, F, position);
         initDriveMotors();
-        initBlocker();
+//        initBlocker();
 //        initColorSensors();
     }
     public void initDriveMotors(){
@@ -371,41 +359,34 @@ public class newRobotTele extends LinearOpMode {
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    public void initBlocker(){
-        blocker = hardwareMap.get(Servo.class, "blocker");
-        blocker.setPosition(Range.clip(blockPosition, 0.0, 1.0));
-    }
+//    public void initBlocker(){
+//        blocker = hardwareMap.get(Servo.class, "blocker");
+//        blocker.setPosition(Range.clip(blockPosition, 0.0, 1.0));
+//    }
 
     private void initMotorOne(double kP, double kI, double kD, double F, double position) {
-        outtake1  = hardwareMap.get(DcMotorEx.class, "outtake1");
-        outtake1.setDirection(DcMotorEx.Direction.FORWARD);
-        outtake1.setPower(outtakeZeroPower);
-        outtake1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        outtake1.setVelocityPIDFCoefficients(4.0030, 0, 0, 14.2410);
-        outtake1.setPositionPIDFCoefficients(position);
-        outtake1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        outtake1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        outtake1.setVelocity(targetOuttakeVelocity);
+        rightOuttake = hardwareMap.get(DcMotorEx.class, "rightOuttake");
+        rightOuttake.setDirection(DcMotorEx.Direction.REVERSE);
+        rightOuttake.setPower(outtakeZeroPower);
+        rightOuttake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+//        rightOuttake.setVelocityPIDFCoefficients(4.0030, 0, 0, 14.2410);
+//        rightOuttake.setPositionPIDFCoefficients(position);
+//        rightOuttake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        rightOuttake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightOuttake.setVelocity(targetOuttakeVelocity);
     }
 
     private void initMotorTwo(double kP, double kI, double kD, double F, double position) {
-        outtake2  = hardwareMap.get(DcMotorEx.class, "outtake2");
-        outtake2.setDirection(DcMotorEx.Direction.REVERSE);
-        outtake2.setPower(outtakeZeroPower);
-        outtake2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        outtake2.setVelocityPIDFCoefficients(kP, kI, kD, F);
-        outtake2.setPositionPIDFCoefficients(position);
-        outtake2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        outtake2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        outtake2.setVelocity(targetOuttakeVelocity);
-    }/*
-    private void initColorSensors() {
-        // color sensor
-        r_frontColorSensor = hardwareMap.get(NormalizedColorSensor.class, "r_frontColorSensor");
-        r_backColorSensor = hardwareMap.get(NormalizedColorSensor.class, "r_backColorSensor");
-        l_frontColorSensor = hardwareMap.get(NormalizedColorSensor.class, "l_frontColorSensor");
-        l_backColorSensor = hardwareMap.get(NormalizedColorSensor.class, "l_backColorSensor");
-    }*/
+        leftOuttake = hardwareMap.get(DcMotorEx.class, "leftOuttake");
+        leftOuttake.setDirection(DcMotorEx.Direction.FORWARD);
+        leftOuttake.setPower(outtakeZeroPower);
+        leftOuttake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+//        leftOuttake.setVelocityPIDFCoefficients(kP, kI, kD, F);
+//        leftOuttake.setPositionPIDFCoefficients(position);
+//        leftOuttake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        leftOuttake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftOuttake.setVelocity(targetOuttakeVelocity);
+    }
 /*
     private void blinkinColors(boolean r_frontHasBall, boolean r_backHasBall, boolean l_frontHasBall, boolean l_backHasBall,
                                boolean r_frontGreen, boolean r_backGreen, boolean l_frontGreen, boolean l_backGreen){
@@ -631,10 +612,10 @@ public class newRobotTele extends LinearOpMode {
 //        telemetry.addData("Current Position", "Position: " + pivotPosition);
         telemetry.addData("Target Velocity", targetOuttakeVelocity);
         telemetry.addData("Intake Vel", intake1Vel);
-        telemetry.addData("Outtake 1 power", outtake1.getPower());
-        telemetry.addData("Outtake 2 power", outtake2.getPower());
-        telemetry.addData("Outtake 1 Velocity", outtake1.getVelocity());
-        telemetry.addData("Outtake 2 Velocity", outtake2.getVelocity());
+        telemetry.addData("Outtake 1 power", rightOuttake.getPower());
+        telemetry.addData("Outtake 2 power", leftOuttake.getPower());
+        telemetry.addData("Outtake 1 Velocity", rightOuttake.getVelocity());
+        telemetry.addData("Outtake 2 Velocity", leftOuttake.getVelocity());
         telemetry.addData("F", F);
         telemetry.addData("kP", kP);
         telemetry.addData("kI", kI);
