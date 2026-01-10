@@ -2,6 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 // RR-specific imports
 
+import static org.firstinspires.ftc.teamcode.AutoLocations.BLUE_CLOSE_LEAVE;
+import static org.firstinspires.ftc.teamcode.AutoLocations.BLUE_CLOSE_SPIKE_ONE_FINAL_Y;
+import static org.firstinspires.ftc.teamcode.AutoLocations.BLUE_CLOSE_SPIKE_ONE_MIN_VELOCITY;
+import static org.firstinspires.ftc.teamcode.AutoLocations.BLUE_CLOSE_SPIKE_ONE_START;
+import static org.firstinspires.ftc.teamcode.AutoLocations.BLUE_CLOSE_SPIKE_TWO_FINAL_Y;
+import static org.firstinspires.ftc.teamcode.AutoLocations.BLUE_CLOSE_SPIKE_TWO_MIN_VELOCITY;
+import static org.firstinspires.ftc.teamcode.AutoLocations.BLUE_CLOSE_SPIKE_TWO_START;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.CLOSE_OUTTAKE_VELOCITY;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.trajectoryWait;
 
@@ -81,9 +88,9 @@ public class BlueClosePathOnly_Actions extends LinearOpMode{
         // TRAVEL TO FIRST SPIKE MARK
         TrajectoryActionBuilder path3 = path2.endTrajectory()
                 .fresh()
-                .splineTo(new Vector2d(-29.0, -15), Math.toRadians(120))
+                .splineTo(BLUE_CLOSE_SPIKE_ONE_START, Math.toRadians(120))
                 .waitSeconds(trajectoryWait)
-                .lineToY(-3, new TranslationalVelConstraint(17.0))
+                .lineToY(BLUE_CLOSE_SPIKE_ONE_FINAL_Y, new TranslationalVelConstraint(BLUE_CLOSE_SPIKE_ONE_MIN_VELOCITY))
                 .waitSeconds(trajectoryWait);
         Action trajectoryActionChosen3 = path3.build();
 
@@ -97,9 +104,9 @@ public class BlueClosePathOnly_Actions extends LinearOpMode{
         // TRAVEL TO SECOND SPIKE MARK
         TrajectoryActionBuilder path4 = toShooter.endTrajectory()
                 .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(-49, -24),Math.toRadians(115)), 0)
+                .splineToLinearHeading(new Pose2d(BLUE_CLOSE_SPIKE_TWO_START,Math.toRadians(115)), 0)
                 .waitSeconds(trajectoryWait)
-                .lineToY(-5, new TranslationalVelConstraint(16.0))
+                .lineToY(BLUE_CLOSE_SPIKE_TWO_FINAL_Y, new TranslationalVelConstraint(BLUE_CLOSE_SPIKE_TWO_MIN_VELOCITY))
                 .waitSeconds(trajectoryWait);
         Action trajectoryActionChosen4 = path4.build();
 
@@ -113,7 +120,7 @@ public class BlueClosePathOnly_Actions extends LinearOpMode{
         // LEAVE
         TrajectoryActionBuilder leavePath = toShooter2.endTrajectory()
                 .fresh()
-                .splineToConstantHeading(new Vector2d(-24,-10),0.0)
+                .splineToConstantHeading(BLUE_CLOSE_LEAVE,0.0)
                 .waitSeconds(trajectoryWait);
         Action leave = leavePath.build();
 
