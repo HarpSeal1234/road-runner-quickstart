@@ -86,7 +86,18 @@ import java.util.List;
 
 @TeleOp(name="AA_decode1024", group="! Linear OpMode")
 public class Tele extends LinearOpMode {
+    enum LAUNCH_STATUS {
+        NOT_LAUNCHED,
+        LAUNCHED
+    }
 
+    enum INTAKE_STATUS {
+        INTAKE_STOPPED,
+        INTAKE_STARTED,
+        INTAKE_NEED_TO_BE_MONITORED,
+        INTAKE_MONITORING,
+        INTAKE_JAMMED
+    }
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor rightFront = null;
@@ -123,7 +134,7 @@ public class Tele extends LinearOpMode {
     private double position = 5.0;
     double blockerPositionR = R_BLOCKER_DOWN;
     double blockerPositionL = L_BLOCKER_DOWN;
-    double pivotPosition = FAR_PIVOT_POSITION;
+//    double pivotPosition = FAR_PIVOT_POSITION;
 
     NormalizedRGBA r_frontColor;
     NormalizedRGBA r_backColor;
@@ -145,7 +156,9 @@ public class Tele extends LinearOpMode {
     int l_frontHasBall = 0;
     int r_backHasBall = 0;
     int l_backHasBall = 0;
-    String pattern = "";
+    LAUNCH_STATUS leftLaunchStatus = LAUNCH_STATUS.NOT_LAUNCHED;
+    LAUNCH_STATUS rightLaunchStatus = LAUNCH_STATUS.NOT_LAUNCHED;
+//    int pattern = 0;
 
 
     double r_frontDistance = 0.0;
@@ -154,8 +167,8 @@ public class Tele extends LinearOpMode {
     double l_backDistance = 0.0;
     int waitTime = 250;
     double intake1Vel = 0;
-    boolean intakeOn = false;
-    private Servo pivot;
+    INTAKE_STATUS intakeStatus = INTAKE_STATUS.INTAKE_STOPPED;
+//    private Servo pivot;
     private double targetv = 0;
     boolean autoUpdate = false;
 
@@ -192,8 +205,8 @@ public class Tele extends LinearOpMode {
         blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.CP1_BREATH_SLOW;
         blinkin.setPattern(blinkinPattern);
 
-        pivot = hardwareMap.get(Servo.class, "pivot");
-        pivot.setPosition(Range.clip(pivotPosition, 0.0, 1.0));
+//        pivot = hardwareMap.get(Servo.class, "pivot");
+//        pivot.setPosition(Range.clip(pivotPosition, 0.0, 1.0));
 
 
 
@@ -207,6 +220,7 @@ public class Tele extends LinearOpMode {
         ElapsedTime patternTimer = new ElapsedTime();
         ElapsedTime velocityTimer = new ElapsedTime();
         ElapsedTime intakeTimer = new ElapsedTime();
+        ElapsedTime ballIntake = new ElapsedTime();
         double lastTargetV = 0;
 
 
@@ -220,11 +234,11 @@ public class Tele extends LinearOpMode {
             double y = gamepad1.left_stick_y; // Remember, Y stick is reversed!
             double x = -gamepad1.left_stick_x;
             double rx = -gamepad1.right_stick_x;
-            double leftFrontPower = Range.clip((y + x + rx),-DRIVE_POWER,DRIVE_POWER);
-            double leftBackPower = Range.clip((y - x + rx),-DRIVE_POWER,DRIVE_POWER);
-            double rightFrontPower = Range.clip((y - x - rx),-DRIVE_POWER,DRIVE_POWER);
-            double rightBackPower = Range.clip((y + x - rx),-DRIVE_POWER,DRIVE_POWER);
-            targetv = Range.clip((((1450.0-1100)/(130-42))*(getRobotToGoalDistance()-42)+1100),900,FAR_OUTTAKE_VELOCITY);
+            double leftFrontPower = Range.clip((y + x + rx), -DRIVE_POWER, DRIVE_POWER);
+            double leftBackPower = Range.clip((y - x + rx), -DRIVE_POWER, DRIVE_POWER);
+            double rightFrontPower = Range.clip((y - x - rx), -DRIVE_POWER, DRIVE_POWER);
+            double rightBackPower = Range.clip((y + x - rx), -DRIVE_POWER, DRIVE_POWER);
+            targetv = Range.clip((((1450.0 - 1100) / (130 - 42)) * (getRobotToGoalDistance() - 42) + 1100), 900, FAR_OUTTAKE_VELOCITY);
             intake1Vel = intake1.getVelocity();
 
 //            telemetryAprilTag();
@@ -236,41 +250,36 @@ public class Tele extends LinearOpMode {
             rightBack.setPower(rightBackPower);
 
             // color sensor
-            r_frontColor = r_frontColorSensor.getNormalizedColors();
-            r_frontColor.toColor();
-            r_backColor = r_backColorSensor.getNormalizedColors();
-            r_backColor.toColor();
-            l_frontColor = l_frontColorSensor.getNormalizedColors();
-            l_frontColor.toColor();
-            l_backColor = l_backColorSensor.getNormalizedColors();
-            l_backColor.toColor();
+//            r_frontColor = r_frontColorSensor.getNormalizedColors();
+//            r_frontColor.toColor();
+//            r_backColor = r_backColorSensor.getNormalizedColors();
+//            r_backColor.toColor();
+//            l_frontColor = l_frontColorSensor.getNormalizedColors();
+//            l_frontColor.toColor();
+//            l_backColor = l_backColorSensor.getNormalizedColors();
+//            l_backColor.toColor();
 //            if (r_frontColorSensor instanceof DistanceSensor) {
 //                r_frontDistance = ((DistanceSensor) r_frontColorSensor).getDistance(DistanceUnit.CM);
 //                telemetry.addData("Distance (cm)", "%.3f", ((DistanceSensor) r_frontColorSensor).getDistance(DistanceUnit.CM));
 //            }
-            r_frontDistance = ((DistanceSensor) r_frontColorSensor).getDistance(DistanceUnit.CM);
-            r_backDistance = ((DistanceSensor) r_backColorSensor).getDistance(DistanceUnit.CM);
-            l_frontDistance = ((DistanceSensor) l_frontColorSensor).getDistance(DistanceUnit.CM);
-            l_backDistance = ((DistanceSensor) l_backColorSensor).getDistance(DistanceUnit.CM);
-
-
 
             //controls
             // OUTTAKE
-            if(gamepad2.left_bumper) {
+            if (gamepad2.left_bumper) {
                 targetOuttakeVelocity = FAR_OUTTAKE_VELOCITY;
                 autoUpdate = false;
-            } else if(gamepad2.right_bumper) {
+            } else if (gamepad2.right_bumper) {
                 targetOuttakeVelocity = CLOSE_OUTTAKE_VELOCITY;
                 autoUpdate = false;
-            } else if (gamepad2.y){
+            } else if (gamepad2.y) {
                 targetOuttakeVelocity = -400;
             } else if (gamepad2.dpad_right) {
                 targetOuttakeVelocity = 0;
                 autoUpdate = false;
-            } else if (gamepad2.dpad_up){
+            } else if (gamepad2.dpad_up) {
                 autoUpdate = true;
                 velocityTimer.reset();
+                patternTimer.reset();
             }
 
 /*
@@ -288,8 +297,9 @@ public class Tele extends LinearOpMode {
  */
 
             // AVOCADOS
-            if (gamepad2.b){
+            if (gamepad2.b) {
                 blockerPositionR = R_BLOCKER_UP;
+                rightLaunchStatus = LAUNCH_STATUS.LAUNCHED;
                 blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
                 if (!rightBlockerEngaged) {
                     rightBlockerEngaged = true;
@@ -298,6 +308,7 @@ public class Tele extends LinearOpMode {
             } else if (gamepad2.x) {
                 blockerPositionL = L_BLOCKER_UP;
                 blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
+                leftLaunchStatus = LAUNCH_STATUS.LAUNCHED;
                 if (!leftBlockerEngaged) {
                     leftBlockerEngaged = true;
                     leftBlockerTimer.reset();
@@ -305,6 +316,9 @@ public class Tele extends LinearOpMode {
             } else if (gamepad2.a) {
                 blockerPositionL = L_BLOCKER_UP;
                 blockerPositionR = R_BLOCKER_UP;
+                leftLaunchStatus = LAUNCH_STATUS.LAUNCHED;
+                rightLaunchStatus = LAUNCH_STATUS.LAUNCHED;
+
                 blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
                 blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
                 if (!leftBlockerEngaged) {
@@ -321,36 +335,44 @@ public class Tele extends LinearOpMode {
             // INTAKE
             if (gamepad1.right_bumper) {
                 intakePower = INTAKE_POWER;
-                intakeTimer.reset();
-                intakeOn = true;
-            } else if (gamepad1.left_bumper){
+                intakeStatus = INTAKE_STATUS.INTAKE_STARTED;
+            } else if (gamepad1.left_bumper) {
                 intakePower = INTAKE_ZERO_POWER;
-                intakeOn = false;
+                intakeStatus = INTAKE_STATUS.INTAKE_STOPPED;
             }
-            if(gamepad1.dpad_left){
+            if (gamepad1.dpad_left) {
                 intakePower = -INTAKE_POWER;
             }
             intake1Vel = intake1.getVelocity();
 
-            if (intakeOn && (intake1Vel < 200) && (intakeTimer.seconds() > 1)){
-                intakePower = 0;
-                intakeOn = false;
+            if (intakeStatus == INTAKE_STATUS.INTAKE_STARTED && intake1Vel > 800) {
+                intakeStatus = INTAKE_STATUS.INTAKE_NEED_TO_BE_MONITORED;
+            }
+            if (intakeStatus == INTAKE_STATUS.INTAKE_NEED_TO_BE_MONITORED && intake1Vel < 200) {
+                intakeStatus = INTAKE_STATUS.INTAKE_MONITORING;
                 intakeTimer.reset();
-//                telemetry.addData("intake", "INTAKEOFF!");
+            }
+            if (intakeStatus == INTAKE_STATUS.INTAKE_MONITORING && intake1Vel < 200 && intakeTimer.milliseconds() > 100) {
+                intakeStatus = INTAKE_STATUS.INTAKE_JAMMED;
+            }
+            if (intakeStatus == INTAKE_STATUS.INTAKE_JAMMED) {
+                intakePower = 0;
+                intakeTimer.reset();
+                intakeStatus = INTAKE_STATUS.INTAKE_STOPPED;
             }
 
             // BLOCKER TIMERS
-            if (leftBlockerEngaged){
-                if (leftBlockerTimer.milliseconds() > waitTime){
+            if (leftBlockerEngaged) {
+                if (leftBlockerTimer.milliseconds() > waitTime) {
                     blockerPositionL = L_BLOCKER_DOWN;
                     blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
                     leftBlockerEngaged = false;
                 }
             }
-            if (rightBlockerEngaged){
-                if (rightBlockerTimer.milliseconds() > waitTime){
+            if (rightBlockerEngaged) {
+                if (rightBlockerTimer.milliseconds() > waitTime) {
                     blockerPositionR = R_BLOCKER_DOWN;
-                    blockerR.setPosition(Range.clip(blockerPositionR, 0.0 , R_BLOCKER_UP));
+                    blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
                     rightBlockerEngaged = false;
                 }
             }
@@ -362,15 +384,15 @@ public class Tele extends LinearOpMode {
 
              */
 
-            if (autoUpdate){
+            if (autoUpdate) {
                 if (getGoal()) {
-                    targetv = Range.clip((((1450.0-1100)/(130-42))*(getRobotToGoalDistance()-42)+1100),900,FAR_OUTTAKE_VELOCITY);
+                    targetv = Range.clip((((1450.0 - 1100) / (130 - 42)) * (getRobotToGoalDistance() - 42) + 1100), 900, FAR_OUTTAKE_VELOCITY);
                     lastTargetV = targetv;
                     velocityTimer.reset();
-                } else if (!getGoal() && (velocityTimer.seconds() > 1)){
+                } else if (!getGoal() && (velocityTimer.seconds() > 1)) {
                     targetv = lastTargetV;
                 } else {
-                    targetv = Range.clip((((1450.0-1100)/(130-42))*(getRobotToGoalDistance()-42)+1100),900,FAR_OUTTAKE_VELOCITY);
+                    targetv = Range.clip((((1450.0 - 1100) / (130 - 42)) * (getRobotToGoalDistance() - 42) + 1100), 900, FAR_OUTTAKE_VELOCITY);
                 }
 //                if (velocityTimer.seconds() > 1){
 //                    targetv = Range.clip((((1450.0-1100)/(130-42))*(getRobotToGoalDistance()-42)+1100),900,FAR_OUTTAKE_VELOCITY);
@@ -386,8 +408,8 @@ public class Tele extends LinearOpMode {
                 }
             }*/
 
-            outtake1.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
-            outtake2.setVelocity(Range.clip(targetOuttakeVelocity,0.0, FAR_OUTTAKE_VELOCITY));
+            outtake1.setVelocity(Range.clip(targetOuttakeVelocity, 0.0, FAR_OUTTAKE_VELOCITY));
+            outtake2.setVelocity(Range.clip(targetOuttakeVelocity, 0.0, FAR_OUTTAKE_VELOCITY));
             getRobotToGoalDistance();
             intake1.setPower(intakePower);
             telemetry();
@@ -397,18 +419,95 @@ public class Tele extends LinearOpMode {
 //            checkColor(l_frontDistance,l_frontColor.red,l_frontColor.green,l_frontHasBall,l_frontGreen);
 //            checkColor(l_backDistance,l_backColor.red,l_backColor.green,l_backHasBall,l_backGreen);
 //            /*
-            r_frontHasBall = checkBallINT(r_frontDistance,r_frontHasBall);
-            r_backHasBall = checkBallINT(r_backDistance,r_backHasBall);
-            l_frontHasBall = checkBallINT(l_frontDistance,l_frontHasBall);
-            l_backHasBall = checkBallINT(l_backDistance,l_backHasBall);
+            if(rightLaunchStatus == LAUNCH_STATUS.NOT_LAUNCHED) {
+                if (r_frontHasBall == 0) {
+                    r_frontDistance = ((DistanceSensor) r_frontColorSensor).getDistance(DistanceUnit.CM);
+                    r_frontHasBall = checkBallINT(r_frontDistance);
+                    if(r_frontHasBall == 1){
+                        r_backDistance = ((DistanceSensor) r_backColorSensor).getDistance(DistanceUnit.CM);
+                        r_backHasBall = checkBallINT(r_backDistance);
+                    }
+                }
+                if (r_backHasBall == 0) {
+                    r_backDistance = ((DistanceSensor) r_backColorSensor).getDistance(DistanceUnit.CM);
+                    r_backHasBall = checkBallINT(r_backDistance);
+                    if (r_backHasBall == 1) {
+                        r_frontDistance = ((DistanceSensor) r_frontColorSensor).getDistance(DistanceUnit.CM);
+                        r_frontHasBall = checkBallINT(r_frontDistance);
+                    }
+                }
+            }else{
+                if (r_backHasBall == 1) {
+                    r_backDistance = ((DistanceSensor) r_backColorSensor).getDistance(DistanceUnit.CM);
+                    r_backHasBall = checkBallINT(r_backDistance);
+                    if (r_backHasBall == 0) {
+                        rightLaunchStatus = LAUNCH_STATUS.NOT_LAUNCHED;
+
+                        r_frontDistance = ((DistanceSensor) r_frontColorSensor).getDistance(DistanceUnit.CM);
+                        r_frontHasBall = checkBallINT(r_frontDistance);
+                    }
+                }else{
+                    r_backDistance = ((DistanceSensor) r_backColorSensor).getDistance(DistanceUnit.CM);
+                    r_backHasBall = checkBallINT(r_backDistance);
+                    if (r_backHasBall == 1) {
+                        rightLaunchStatus = LAUNCH_STATUS.NOT_LAUNCHED;
+
+                        r_frontDistance = ((DistanceSensor) r_frontColorSensor).getDistance(DistanceUnit.CM);
+                        r_frontHasBall = checkBallINT(r_frontDistance);
+                    }
+                }
+            }
+            if(leftLaunchStatus == LAUNCH_STATUS.NOT_LAUNCHED) {
+                if (l_frontHasBall == 0) {
+                    l_frontDistance = ((DistanceSensor) l_frontColorSensor).getDistance(DistanceUnit.CM);
+                    l_frontHasBall = checkBallINT(l_frontDistance);
+                    if (l_frontHasBall == 1) {
+                        l_backDistance = ((DistanceSensor) l_backColorSensor).getDistance(DistanceUnit.CM);
+                        l_backHasBall = checkBallINT(l_backDistance);
+                    }
+                }
+                if (l_backHasBall == 0) {
+                    l_backDistance = ((DistanceSensor) l_backColorSensor).getDistance(DistanceUnit.CM);
+                    l_backHasBall = checkBallINT(l_backDistance);
+                    if(l_backHasBall == 1) {
+//                        l_frontHasBall = 0;
+                        l_frontDistance = ((DistanceSensor) l_frontColorSensor).getDistance(DistanceUnit.CM);
+                        l_frontHasBall = checkBallINT(l_frontDistance);
+                    }
+                }
+            } else{
+                leftLaunchStatus = LAUNCH_STATUS.NOT_LAUNCHED;
+                if (l_backHasBall == 1) {
+                    l_backDistance = ((DistanceSensor) l_backColorSensor).getDistance(DistanceUnit.CM);
+                    l_backHasBall = checkBallINT(l_backDistance);
+                    if (l_backHasBall == 0) {
+                        rightLaunchStatus = LAUNCH_STATUS.NOT_LAUNCHED;
+
+                        l_frontDistance = ((DistanceSensor) l_frontColorSensor).getDistance(DistanceUnit.CM);
+                        l_frontHasBall = checkBallINT(l_frontDistance);
+                    }
+                }else{
+                    l_backDistance = ((DistanceSensor) l_backColorSensor).getDistance(DistanceUnit.CM);
+                    l_backHasBall = checkBallINT(l_backDistance);
+                    if (l_backHasBall == 1) {
+                        rightLaunchStatus = LAUNCH_STATUS.NOT_LAUNCHED;
+
+                        l_frontDistance = ((DistanceSensor) l_frontColorSensor).getDistance(DistanceUnit.CM);
+                        l_frontHasBall = checkBallINT(l_frontDistance);
+                    }
+                }
+            }
 
 //            blinkinColors(r_frontHasBall,r_backHasBall,l_frontHasBall,l_backHasBall,r_frontGreen,r_backGreen,l_frontGreen,l_backGreen);
 //            telemetry.addData("r front", r_frontHasBall);
 //            telemetry.addData("r back", r_backHasBall);
 //            telemetry.addData("l front", l_frontHasBall);
 //            telemetry.addData("l back", l_backHasBall);
-            telemetry.addData("distance", r_backDistance);
-            blinkinINT(r_frontHasBall,r_backHasBall,l_frontHasBall,l_backHasBall);
+//            telemetry.addData("distance", r_backDistance);
+                blinkinINT(r_frontHasBall, r_backHasBall, l_frontHasBall, l_backHasBall);
+                blinkinINT(r_frontHasBall, r_backHasBall, l_frontHasBall, l_backHasBall);
+                blinkinINT(r_frontHasBall, r_backHasBall, l_frontHasBall, l_backHasBall);
+                blinkinINT(r_frontHasBall, r_backHasBall, l_frontHasBall, l_backHasBall);
 
 //            colorTelemetry(l_frontColor.red,l_frontColor.blue,l_frontColor.green,l_frontDistance);
 //            individualTest(l_frontDistance, l_frontColor.red,l_frontColor.green);
@@ -512,21 +611,15 @@ public class Tele extends LinearOpMode {
 
     public void blinkinINT(int r_frontHasBall, int r_backHasBall, int l_frontHasBall, int l_backHasBall){
         if ((r_frontHasBall + r_backHasBall + l_frontHasBall + l_backHasBall) == 0){
-            blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.RED;
-//            pattern = "red";
+            blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.WHITE;
         } else if ((r_frontHasBall + r_backHasBall + l_frontHasBall + l_backHasBall) == 1) {
-//            blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.HOT_PINK;
-            blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_PARTY_PALETTE;
-//            pattern = "pink";
+            blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.YELLOW;
         } else if ((r_frontHasBall + r_backHasBall + l_frontHasBall + l_backHasBall) == 2) {
             blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.BLUE;
-//            pattern = "blue";
         } else if ((r_frontHasBall + r_backHasBall + l_frontHasBall + l_backHasBall) == 3) {
             blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
-//            pattern = "green";
         } else if ((r_frontHasBall + r_backHasBall + l_frontHasBall + l_backHasBall) == 4){
-            blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_PARTY_PALETTE;
-//            pattern = "wave_party";
+            blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.RED;
         }
 
     }
@@ -555,13 +648,11 @@ public class Tele extends LinearOpMode {
 
     }
 
-    private int checkBallINT(double distance, int hasBall){
+    private int checkBallINT(double distance){
         if (distance < 2.0) {
-            hasBall = 1;
-            return hasBall;
+            return 1;
         } else {
-            hasBall = 0;
-            return hasBall;
+            return 0;
         }
 
     }
@@ -725,25 +816,32 @@ public class Tele extends LinearOpMode {
 
     public void telemetry() {
         telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.addData("state", intakeStatus);
+        telemetry.addData("left color state", leftLaunchStatus);
+        telemetry.addData("right color state", rightLaunchStatus);
         telemetry.addData("Intake Power", "Intake Power: " + intakePower);
         telemetry.addData("blockerPosLEFT", "Position: " + blockerPositionL);
         telemetry.addData("blockerPosRIGHT", "Position: " + blockerPositionR);
-        telemetry.addData("Current Position", "Position: " + pivotPosition);
+//        telemetry.addData("Current Position", "Position: " + pivotPosition);
         telemetry.addData("Target Velocity", targetv);
         telemetry.addData("INTAKE Velocity", intake1.getVelocity());
         telemetry.addData("Outtake 1 power", outtake1.getPower());
         telemetry.addData("Outtake 2 power", outtake2.getPower());
         telemetry.addData("Outtake 1 Velocity", outtake1.getVelocity());
         telemetry.addData("Outtake 2 Velocity", outtake2.getVelocity());
-        telemetry.addData("F", F);
-        telemetry.addData("kP", kP);
-        telemetry.addData("kI", kI);
-        telemetry.addData("kD","%.5f", kD);
+//        telemetry.addData("F", F);
+//        telemetry.addData("kP", kP);
+//        telemetry.addData("kI", kI);
+//        telemetry.addData("kD","%.5f", kD);
         telemetryAprilTag();
-//        telemetry.addData("rightFront", rightFrontPower);
-//        telemetry.addData("leftFront", leftFrontPower);
-//        telemetry.addData("rightBack", rightBackPower);
-//        telemetry.addData("leftBack", leftBackPower);
+        telemetry.addData("rightFront", r_frontHasBall);
+        telemetry.addData("leftFront", l_frontHasBall);
+        telemetry.addData("rightBack", r_backHasBall);
+        telemetry.addData("leftBack", l_backHasBall);
+        telemetry.addData("rightFront distance", r_frontDistance);
+        telemetry.addData("leftFront distance", l_frontDistance);
+        telemetry.addData("rightBack distance", r_backDistance);
+        telemetry.addData("leftBack distance", l_backDistance);
 
     }
 
