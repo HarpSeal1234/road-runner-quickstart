@@ -28,6 +28,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -80,18 +81,22 @@ public class Launcher {
     public Action startLauncher(int velocity){
         return new StartLauncher(velocity);
     }
-    /*public class LauncherFar implements Action {
+    /*
+    public class LauncherFar implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            outtake1.setVelocity(FAR_OUTTAKE_VELOCITY);
+            outtake1.setVelocity(1500);
+            outtake2.setVelocity(1500);
+            outtake1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(0.4,0,0,15.7));
+            outtake2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,new PIDFCoefficients(0.4,0,0,15.7));
             return false;
         }
 
     }
     public Action launcherFar(){
         return new LauncherFar();
-    }*/
-
+    }
+*/
     public class LauncherOff implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
