@@ -47,7 +47,7 @@ public class BlueFarAuto extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(new Vector2d(10.0, -2), Math.toRadians(19.0)), Math.toRadians(0.0))
                 .waitSeconds(trajectoryWait);
         Action trajectoryActionChosen1 = path1.build();
-        pivot.farPivot();
+//        pivot.farPivot();
 
         TrajectoryActionBuilder path2 = path1.endTrajectory()
                 .fresh()

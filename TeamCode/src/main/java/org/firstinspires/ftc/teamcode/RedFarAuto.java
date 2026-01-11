@@ -38,7 +38,7 @@ public class RedFarAuto extends LinearOpMode {
         Intake intake1 = new Intake(hardwareMap);
         Launcher outtake1 = new Launcher(hardwareMap);
         Avocado blocker = new Avocado(hardwareMap);
-        Pivot pivot = new Pivot(hardwareMap);
+//        Pivot pivot = new Pivot(hardwareMap);
         BallManager ballManager = new BallManager(hardwareMap);
 
 
@@ -47,7 +47,7 @@ public class RedFarAuto extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(new Vector2d(10.0, 2), Math.toRadians(-19.0)), Math.toRadians(0.0))
                 .waitSeconds(trajectoryWait);
         Action trajectoryActionChosen1 = path1.build();
-        pivot.farPivot();
+//        pivot.farPivot();
 
         TrajectoryActionBuilder path2 = path1.endTrajectory()
                 .fresh()
