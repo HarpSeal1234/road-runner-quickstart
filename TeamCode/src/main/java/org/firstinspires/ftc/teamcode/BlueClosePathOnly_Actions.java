@@ -23,9 +23,11 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Config
+@Disabled
 @Autonomous(name = "Blue Close Auto", group = "Autonomous")
 
 public class BlueClosePathOnly_Actions extends LinearOpMode{
@@ -46,7 +48,7 @@ public class BlueClosePathOnly_Actions extends LinearOpMode{
         Intake intake1 = new Intake(hardwareMap);
         Launcher outtake1 = new Launcher(hardwareMap);
         Avocado blocker = new Avocado(hardwareMap);
-        Pivot pivot = new Pivot(hardwareMap);
+//        Pivot pivot = new Pivot(hardwareMap);
         BallManager ballManager = new BallManager(hardwareMap);
 
         int visionOutputPosition = 1;
@@ -57,7 +59,7 @@ public class BlueClosePathOnly_Actions extends LinearOpMode{
                 .splineToConstantHeading(new Vector2d(-24, shootYpos), 0)
                 .waitSeconds(trajectoryWait);
         Action trajectoryActionChosen1 = path1.build();
-        pivot.closePivot();
+//        pivot.closePivot();
 
         waitForStart();
         if (isStopRequested()) return;
