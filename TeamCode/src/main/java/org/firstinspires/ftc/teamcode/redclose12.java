@@ -15,10 +15,12 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
+@Disabled
 @Autonomous(name = "Red Close Auto", group = "Autonomous")
 
 public class redclose12 extends LinearOpMode{
@@ -37,7 +39,7 @@ public class redclose12 extends LinearOpMode{
         Intake intake1 = new Intake(hardwareMap);
         Launcher outtake1 = new Launcher(hardwareMap);
         Avocado blocker = new Avocado(hardwareMap);
-        Pivot pivot = new Pivot(hardwareMap);
+//        Pivot pivot = new Pivot(hardwareMap);
         ElapsedTime velocityTimer = new ElapsedTime();
 
 
@@ -50,7 +52,7 @@ public class redclose12 extends LinearOpMode{
                 .setTangent(0.0)
                 .splineToConstantHeading(new Vector2d(-24, 36), 0)
                 .waitSeconds(trajectoryWait);
-        pivot.closePivot();
+//        pivot.closePivot();
         Action trajectoryActionChosen1 = path1.build();
 
         Actions.runBlocking(new ParallelAction(outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+200), trajectoryActionChosen1));
@@ -60,7 +62,7 @@ public class redclose12 extends LinearOpMode{
 
         TrajectoryActionBuilder path2 = path1.endTrajectory()
                 .fresh()
-                .turn(Math.toRadians(-45))
+                .turn(Math.toRadians(-47))
                 .waitSeconds(trajectoryWait);
         Action trajectoryActionChosen2 = path2.build();
 
