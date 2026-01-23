@@ -272,7 +272,7 @@ public class Tele extends LinearOpMode {
                 targetOuttakeVelocity = CLOSE_OUTTAKE_VELOCITY;
                 autoUpdate = false;
             } else if (gamepad2.y) {
-                targetOuttakeVelocity = -400;
+                targetOuttakeVelocity = -200;
             } else if (gamepad2.dpad_right) {
                 targetOuttakeVelocity = 0;
                 autoUpdate = false;
@@ -408,8 +408,8 @@ public class Tele extends LinearOpMode {
                 }
             }*/
 
-            outtake1.setVelocity(Range.clip(targetOuttakeVelocity, 0.0, FAR_OUTTAKE_VELOCITY));
-            outtake2.setVelocity(Range.clip(targetOuttakeVelocity, 0.0, FAR_OUTTAKE_VELOCITY));
+            outtake1.setVelocity(Range.clip(targetOuttakeVelocity, -400, FAR_OUTTAKE_VELOCITY));
+            outtake2.setVelocity(Range.clip(targetOuttakeVelocity, -400, FAR_OUTTAKE_VELOCITY));
             getRobotToGoalDistance();
             intake1.setPower(intakePower);
             telemetry();
