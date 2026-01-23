@@ -65,14 +65,14 @@ public final class MecanumDrive {
                 RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
         // drive model parameters
-        public double inPerTick = 0.00196; // OG 92/46770.75 // 46849, 46736, 46770, 46728
-        public double lateralInPerTick = 0.0013248924399273; //0.0012809285282099868, 0.0013164556413455312, 0.0013376538315134304, 0.0013645317586401058
-        public double trackWidthTicks = 6041.201367349386; // 5994.260765404707
+        public double inPerTick = 92/46863; // 0.0019631692379916
+        public double lateralInPerTick = 0.0013095635442885; //0.0012809285282099868, 0.0013164556413455312, 0.0013376538315134304, 0.0013645317586401058
+        public double trackWidthTicks = 6212.8766166124; //
 
         // feedforward parameters (in tick units)
-        public double kS = 1.4997059834398; // OG 1.4997059834398 // 1.6733490884404159, 1.5540436450778272, 1.3487322807682531, 1.4226989194728716
-        public double kV = 0.00025428726901472; //0.00024694812396223927, 0.0002533437698516965, 0.000257303139945750, 0.00025955404229921296
-        public double kA = 0.00001; // if too fast use kA as 0.00001
+        public double kS = 1.5188851376642; // 1.4997059834398
+        public double kV = 0.00025622948726087; // 0.00025428726901472
+        public double kA = 0; // 0.00001
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50;
@@ -84,11 +84,11 @@ public final class MecanumDrive {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 5.0;
-        public double lateralGain = 1.1;
-        public double headingGain = 2.0; // shared with turn
+        public double axialGain = 0; // 5.0
+        public double lateralGain = 0; // 1.1
+        public double headingGain = 0.0; // shared with turn 2.0
 
-        public double axialVelGain = 0.3;
+        public double axialVelGain = 0; // 0
         public double lateralVelGain = 0.0;
         public double headingVelGain = 0.0; // shared with turn
     }
