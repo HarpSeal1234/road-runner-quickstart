@@ -140,9 +140,9 @@ public class RedClose_Faster extends LinearOpMode{
                             new SleepAction(0.2),
                             new ParallelAction(blocker.r_Disengaged()), // green ball #1 end // purple ball #1 start
                             new SleepAction(0.5),
-                            blocker.r_Engaged(),
+                            new ParallelAction(blocker.r_Engaged(), blocker.l_Engaged()),
                             new SleepAction(0.2),
-                            blocker.r_Disengaged(),
+                            new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()),
                             new SleepAction(1)
                     )
             );
@@ -160,10 +160,9 @@ public class RedClose_Faster extends LinearOpMode{
                             new SleepAction(0.2),
                             blocker.l_Disengaged(),
                             new SleepAction(0.3),
-                            blocker.r_Engaged(),
-//                            new ParallelAction(blocker.r_Engaged(), blocker.l_Disengaged()),
+                            new ParallelAction(blocker.r_Engaged(), blocker.l_Engaged()),
                             new SleepAction(0.2),
-                            blocker.r_Disengaged(),
+                            new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()),
                             new SleepAction(1)
                     )
             );
