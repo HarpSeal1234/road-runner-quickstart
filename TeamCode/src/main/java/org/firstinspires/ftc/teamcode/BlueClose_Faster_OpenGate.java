@@ -32,7 +32,7 @@ public class BlueClose_Faster_OpenGate extends LinearOpMode{
     private static final boolean USE_WEBCAM = true;
 
     public MecanumDrive drive ;
-    private double fTrajectoryWait = 0.04;
+     private double fTrajectoryWait = 0.04;
 
     public double shootYpos = -35;
     public void reportPosition(){
