@@ -344,6 +344,16 @@ public class Tele extends LinearOpMode {
                     rightBlockerEngaged = true;
                     rightBlockerTimer.reset();
                 }
+            } else if (gamepad2.dpad_down) {
+                blockerPositionL = L_BLOCKER_DOWN;
+                blockerPositionR = R_BLOCKER_DOWN;
+                blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
+                blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
+            } else if (gamepad2.dpad_left){
+                blockerPositionL = L_BLOCKER_UP;
+                blockerPositionR = R_BLOCKER_UP;
+                blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
+                blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
             }
 
 
