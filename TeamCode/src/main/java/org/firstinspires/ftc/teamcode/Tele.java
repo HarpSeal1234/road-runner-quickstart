@@ -54,6 +54,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -165,6 +166,15 @@ public class Tele extends LinearOpMode {
     double l_frontDistance = 0.0;
     double r_backDistance = 0.0;
     double l_backDistance = 0.0;
+    PIDFCoefficients vel900_pidf = new PIDFCoefficients(2.1,0,0,13.6);
+    PIDFCoefficients vel1000_pidf = new PIDFCoefficients(1.1,0,0,16.1);
+
+    PIDFCoefficients vel1100_pidf = new PIDFCoefficients(2.8,0,0,16.2);
+
+    PIDFCoefficients vel1200_pidf = new PIDFCoefficients(0.3,0,0,15.3);
+    PIDFCoefficients far_pidf = new PIDFCoefficients(1.6,0,0,16.2);
+
+
     int waitTime = 250;
     double intake1Vel = 0;
     INTAKE_STATUS intakeStatus = INTAKE_STATUS.INTAKE_STOPPED;
@@ -269,7 +279,9 @@ public class Tele extends LinearOpMode {
                 targetOuttakeVelocity = FAR_OUTTAKE_VELOCITY;
                 autoUpdate = false;
             } else if (gamepad2.right_bumper) {
-                targetOuttakeVelocity = CLOSE_OUTTAKE_VELOCITY;
+                targetOuttakeVelocity = 1000;
+                outtake1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,vel1000_pidf);
+                outtake2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,vel1000_pidf);
                 autoUpdate = false;
             } else if (gamepad2.y) {
                 targetOuttakeVelocity = -200;
@@ -282,19 +294,22 @@ public class Tele extends LinearOpMode {
                 patternTimer.reset();
             }
 
-/*
-            //PIVOT
-            if (gamepad1.x) {
-                pivotPosition = ACTUAL_PIVOT_POSITION;
-                pivotPosition = Range.clip(pivotPosition, 0.0, 1.0);
-                pivot.setPosition(pivotPosition);
-            } else if (gamepad1.y) {
-                pivotPosition = FAR_PIVOT_POSITION;
-                pivotPosition = Range.clip(pivotPosition, 0.0, 1.0);
-                pivot.setPosition(pivotPosition);
+            if ((900 < outtake1.getVelocity()) && (outtake1.getVelocity() < 950)){
+                outtake1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,vel900_pidf);
+                outtake2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,vel900_pidf);
+            } else if ((960 <= outtake1.getVelocity()) && (outtake1.getVelocity() < 1050)){
+                outtake1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,vel1000_pidf);
+                outtake2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,vel1000_pidf);
+            } else if ((1050 <= outtake1.getVelocity()) && (outtake1.getVelocity() < 1150)){
+                outtake1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,vel1100_pidf);
+                outtake2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,vel1100_pidf);
+             } else if ((1150 <= outtake1.getVelocity()) && (outtake1.getVelocity() < 1250)){
+                outtake1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,vel1200_pidf);
+                outtake2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,vel1200_pidf);
+            } else {
+                outtake1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,far_pidf);
+                outtake2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,far_pidf);
             }
-
- */
 
             // AVOCADOS
             if (gamepad2.b) {
