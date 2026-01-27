@@ -16,9 +16,6 @@ public class OrcaRoboticsConstants {
     public final static double INTAKE_POWER = 0.67;
     public final static double INTAKE_ZERO_POWER = 0.0;
 
-    // SINGLE BLOCKER
-    public final static double BLOCKER_CLOSE = 0.5; // 0.12
-    public final static double BLOCKER_OPEN = 1.0; // 0.12
 
 
 

@@ -151,27 +151,27 @@ public class newRobotTele extends LinearOpMode {
             //controls
             if(gamepad2.left_bumper) {
                 outtake1.setVelocity(FAR_OUTTAKE_VELOCITY);
-                outtake2.setVelocity(FAR_OUTTAKE_VELOCITY);
+//                outtake2.setVelocity(FAR_OUTTAKE_VELOCITY);
             } else if(gamepad2.right_bumper) {
                 outtake1.setVelocity(CLOSE_OUTTAKE_VELOCITY);
-                outtake2.setVelocity(CLOSE_OUTTAKE_VELOCITY);
+//                outtake2.setVelocity(CLOSE_OUTTAKE_VELOCITY);
             } else if (gamepad2.dpad_right) {
                 outtake1.setVelocity(0.0);
-                outtake2.setVelocity(0.0);
+//                outtake2.setVelocity(0.0);
             }
 
             // INTAKE
             if (gamepad1.dpad_left){
                 frontIntake.setPower(-0.7);
             }  else if (gamepad1.right_bumper) {
-                frontIntake.setPower(0.7);
+                frontIntake.setPower(1.0);
                 intake1Timer.reset();
                 intake1On = true;
             } else if (gamepad1.left_bumper){
                frontIntake.setPower(0.0);
                 intake1On = false;
             } else if (gamepad1.a){
-                backIntake.setPower(0.5);
+                backIntake.setPower(0.8);
             } else if (gamepad1.b){
                 backIntake.setPower(0.0);
             }
@@ -216,13 +216,13 @@ public class newRobotTele extends LinearOpMode {
     }
 
     private void initIntake(){
-        frontIntake = hardwareMap.get(DcMotorEx.class,"outtake1");
+        frontIntake = hardwareMap.get(DcMotorEx.class,"intake1");
         frontIntake.setDirection(DcMotorSimple.Direction.REVERSE);
         frontIntake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontIntake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        backIntake = hardwareMap.get(DcMotor.class,"outtake2");
+        backIntake = hardwareMap.get(DcMotor.class,"intake2");
         backIntake.setDirection(DcMotorSimple.Direction.FORWARD);
         backIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
