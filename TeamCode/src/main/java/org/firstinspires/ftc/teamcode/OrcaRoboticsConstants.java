@@ -22,8 +22,8 @@ public class OrcaRoboticsConstants {
     public final static double L_BLOCKER_DOWN = 0.95; // 0.78
 
     // RIGHT BLOCKER
-    public final static double R_BLOCKER_UP = 0.72; // 0.62
-    public final static double R_BLOCKER_DOWN = 0.27; //0.03
+    public final static double R_BLOCKER_UP = 0.95; // 0.62
+    public final static double R_BLOCKER_DOWN = 0.4; //0.03
 
     // PIVOT
     public final static double FAR_PIVOT_POSITION = 0.72;
