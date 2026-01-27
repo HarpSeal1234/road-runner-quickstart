@@ -76,8 +76,8 @@ public class newRobotTele extends LinearOpMode {
         private DcMotorEx outtake2 = null;
     private DcMotorEx frontIntake = null;
     private DcMotor backIntake = null;
-    double firstIntakePower = 0.0;
-    double secondIntakePower = 0.0;
+    double frontIntakePower = 0.0;
+    double backIntakePower = 0.0;
     double firstIntake = 0.9;
     double secondIntake = 0.6;
     private Servo blocker;
@@ -97,7 +97,6 @@ public class newRobotTele extends LinearOpMode {
     private double motorOneMaxVelocity = 2800;
     private double F = 32767/motorOneMaxVelocity;
 
-
     private double position = 5.0;
     double blockPosition = 0.6;
             ;
@@ -108,49 +107,21 @@ public class newRobotTele extends LinearOpMode {
     int l_backHasBall = 0;
     String pattern = "";
 
-
-    double r_frontDistance = 0.0;
-    double l_frontDistance = 0.0;
-    double r_backDistance = 0.0;
-    double l_backDistance = 0.0;
     int waitTime = 250;
     boolean intake1On = false;
     double intake1Vel = 0.0;
     private Servo pivot;
 
     private static final boolean USE_WEBCAM = true;
-//    private Position cameraPosition = new Position(DistanceUnit.INCH,
-//            0, 0, 0, 0);
-//    private YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
-//            0, -90, 0, 0);
-
-    /**
-     * The variable to store our instance of the AprilTag processor.
-     */
     private AprilTagProcessor aprilTag;
-
-    /**
-     * The variable to store our instance of the vision portal.
-     */
     private VisionPortal visionPortal;
 
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-//        initAprilTag();
-//        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
-//        telemetry.addData(">", "Touch START to start OpMode");
-//        telemetry.update();
 
         initHardware();
-
-/*
-        blinkin = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
-        blinkinPattern = RevBlinkinLedDriver.BlinkinPattern.CP1_BREATH_SLOW;
-        blinkin.setPattern(blinkinPattern);
-
- */
 
         float step = 0.001f;
         double outtakeStep = 7.0;
@@ -171,9 +142,6 @@ public class newRobotTele extends LinearOpMode {
             double rightBackPower = Range.clip((y + x - rx),-DRIVE_POWER,DRIVE_POWER);
             ElapsedTime intake1Timer = new ElapsedTime();
 
-//            telemetryAprilTag();
-//            telemetry.update();
-
             leftFront.setPower(leftFrontPower);
             leftBack.setPower(leftBackPower);
             rightFront.setPower(rightFrontPower);
@@ -183,13 +151,9 @@ public class newRobotTele extends LinearOpMode {
             //controls
             if(gamepad2.left_bumper) {
                 outtake1.setVelocity(FAR_OUTTAKE_VELOCITY);
-//                rightOuttake.setVelocityPIDFCoefficients(4.0030, 0, 0, 14.2410);
-//                leftOuttake.setVelocityPIDFCoefficients(4.0030, 0, 0, 14.2410);
                 outtake2.setVelocity(FAR_OUTTAKE_VELOCITY);
             } else if(gamepad2.right_bumper) {
                 outtake1.setVelocity(CLOSE_OUTTAKE_VELOCITY);
-//                rightOuttake.setVelocityPIDFCoefficients(3.0, 0, 0, 14.543);
-//                leftOuttake.setVelocityPIDFCoefficients(3.0, 0, 0, 14.543);
                 outtake2.setVelocity(CLOSE_OUTTAKE_VELOCITY);
             } else if (gamepad2.dpad_right) {
                 outtake1.setVelocity(0.0);
@@ -213,16 +177,15 @@ public class newRobotTele extends LinearOpMode {
             }
 
             if (intake1On && (intake1Vel < 200) && (intake1Timer.seconds() > 0.3)){
-                firstIntakePower = 0.0;
-//                intake1.setPower(0.0);
+                frontIntakePower = 0.0;
                 intake1On = false;
                 intake1Timer.reset();
             }
 
             intake1Vel = frontIntake.getVelocity();
 
-            frontIntake.setPower(firstIntakePower);
-            backIntake.setPower(secondIntakePower);
+            frontIntake.setPower(frontIntakePower);
+            backIntake.setPower(backIntakePower);
             telemetry();
 
             telemetry.update();
@@ -286,10 +249,7 @@ public class newRobotTele extends LinearOpMode {
 
     public void telemetry() {
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Intake Power", "Intake Power: " + firstIntakePower);
-        telemetry.addData("blockerPos", "Position: " + blockPosition);
-//        telemetry.addData("blockerPosRIGHT", "Position: " + blockerPositionR);
-//        telemetry.addData("Current Position", "Position: " + pivotPosition);
+        telemetry.addData("Intake Power", "Intake Power: " + frontIntakePower);
         telemetry.addData("Target Velocity", targetOuttakeVelocity);
         telemetry.addData("Intake Vel", intake1Vel);
         telemetry.addData("Outtake 1 power", outtake1.getPower());
@@ -300,13 +260,6 @@ public class newRobotTele extends LinearOpMode {
         telemetry.addData("kP", kP);
         telemetry.addData("kI", kI);
         telemetry.addData("kD","%.5f", kD);
-//        telemetryAprilTag();
-//        telemetry.addData("rightFront", rightFrontPower);
-//        telemetry.addData("leftFront", leftFrontPower);
-//        telemetry.addData("rightBack", rightBackPower);
-//        telemetry.addData("leftBack", leftBackPower);
-
     }
-
 }
 
