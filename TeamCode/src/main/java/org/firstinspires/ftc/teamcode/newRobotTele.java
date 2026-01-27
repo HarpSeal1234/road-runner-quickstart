@@ -162,18 +162,18 @@ public class newRobotTele extends LinearOpMode {
 
             // INTAKE
             if (gamepad1.dpad_left){
-                frontIntake.setPower(-0.7);
+                frontIntakePower = -0.7;
             }  else if (gamepad1.right_bumper) {
-                frontIntake.setPower(1.0);
-                intake1Timer.reset();
-                intake1On = true;
+                frontIntakePower = 1.0;
+//                intake1Timer.reset();
+//                intake1On = true;
             } else if (gamepad1.left_bumper){
-               frontIntake.setPower(0.0);
+                frontIntakePower = 0.0;
                 intake1On = false;
             } else if (gamepad1.a){
-                backIntake.setPower(0.8);
+                backIntakePower = -1.0;
             } else if (gamepad1.b){
-                backIntake.setPower(0.0);
+                backIntakePower = 0.0;
             }
 
             if (intake1On && (intake1Vel < 200) && (intake1Timer.seconds() > 0.3)){
