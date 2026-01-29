@@ -99,6 +99,13 @@ public class Tele extends LinearOpMode {
         INTAKE_MONITORING,
         INTAKE_JAMMED
     }
+
+    enum BLOCKER_STATE {
+        IDLE,
+        FIRST_BALL,
+        SECOND_BALL,
+        SECOND_BALL_WAIT
+    }
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor rightFront = null;
@@ -159,6 +166,8 @@ public class Tele extends LinearOpMode {
     int l_backHasBall = 0;
     LAUNCH_STATUS leftLaunchStatus = LAUNCH_STATUS.NOT_LAUNCHED;
     LAUNCH_STATUS rightLaunchStatus = LAUNCH_STATUS.NOT_LAUNCHED;
+    BLOCKER_STATE rightBlockerState = BLOCKER_STATE.IDLE;
+    BLOCKER_STATE leftBlockerState = BLOCKER_STATE.IDLE;
 //    int pattern = 0;
 
 
@@ -224,9 +233,12 @@ public class Tele extends LinearOpMode {
         float step = 0.001f;
         double outtakeStep = 7.0;
         boolean rightBlockerEngaged = false;
+        boolean rightBlockerFirst = false;
         boolean leftBlockerEngaged = false;
         ElapsedTime rightBlockerTimer = new ElapsedTime();
+        ElapsedTime rightBlockerENGAGEDTimer = new ElapsedTime();
         ElapsedTime leftBlockerTimer = new ElapsedTime();
+        ElapsedTime leftBlockerENGAGEDTimer = new ElapsedTime();
         ElapsedTime patternTimer = new ElapsedTime();
         ElapsedTime velocityTimer = new ElapsedTime();
         ElapsedTime intakeTimer = new ElapsedTime();
@@ -314,8 +326,9 @@ public class Tele extends LinearOpMode {
             // AVOCADOS
             if (gamepad2.b) {
                 blockerPositionR = R_BLOCKER_UP;
-                rightLaunchStatus = LAUNCH_STATUS.LAUNCHED;
                 blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
+                rightBlockerState = BLOCKER_STATE.FIRST_BALL;
+                rightLaunchStatus = LAUNCH_STATUS.LAUNCHED;
                 if (!rightBlockerEngaged) {
                     rightBlockerEngaged = true;
                     rightBlockerTimer.reset();
@@ -323,6 +336,7 @@ public class Tele extends LinearOpMode {
             } else if (gamepad2.x) {
                 blockerPositionL = L_BLOCKER_UP;
                 blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
+                leftBlockerState = BLOCKER_STATE.FIRST_BALL;
                 leftLaunchStatus = LAUNCH_STATUS.LAUNCHED;
                 if (!leftBlockerEngaged) {
                     leftBlockerEngaged = true;
@@ -333,6 +347,8 @@ public class Tele extends LinearOpMode {
                 blockerPositionR = R_BLOCKER_UP;
                 leftLaunchStatus = LAUNCH_STATUS.LAUNCHED;
                 rightLaunchStatus = LAUNCH_STATUS.LAUNCHED;
+                rightBlockerState = BLOCKER_STATE.FIRST_BALL;
+                leftBlockerState = BLOCKER_STATE.FIRST_BALL;
 
                 blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
                 blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
@@ -349,6 +365,7 @@ public class Tele extends LinearOpMode {
                 blockerPositionR = R_BLOCKER_DOWN;
                 blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
                 blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
+                intakePower = 0;
             } else if (gamepad2.dpad_left){
                 blockerPositionL = L_BLOCKER_UP;
                 blockerPositionR = R_BLOCKER_UP;
@@ -386,28 +403,63 @@ public class Tele extends LinearOpMode {
                 intakeStatus = INTAKE_STATUS.INTAKE_STOPPED;
             }
 
-            // BLOCKER TIMERS
-            if (leftBlockerEngaged) {
-                if (leftBlockerTimer.milliseconds() > waitTime) {
-                    blockerPositionL = L_BLOCKER_DOWN;
-                    blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
-                    leftBlockerEngaged = false;
+
+            if (rightBlockerEngaged){
+                if (rightBlockerState == BLOCKER_STATE.FIRST_BALL) {
+                    if (rightBlockerTimer.milliseconds() > waitTime) {
+                        blockerPositionR = R_BLOCKER_DOWN;
+                       blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
+                        rightBlockerENGAGEDTimer.reset();
+                        rightBlockerState = BLOCKER_STATE.SECOND_BALL;
+                        intakePower = INTAKE_POWER;
+                    }
                 }
-            }
-            if (rightBlockerEngaged) {
-                if (rightBlockerTimer.milliseconds() > waitTime) {
-                    blockerPositionR = R_BLOCKER_DOWN;
-                    blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
-                    rightBlockerEngaged = false;
+                else if (rightBlockerState == BLOCKER_STATE.SECOND_BALL) {
+                    if (rightBlockerENGAGEDTimer.milliseconds() > 300) {
+                        blockerPositionR = R_BLOCKER_UP;
+                        blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
+                        rightBlockerTimer.reset();
+                        rightBlockerENGAGEDTimer.reset();
+                        rightBlockerState = BLOCKER_STATE.SECOND_BALL_WAIT;
+                    }
+            } else if (rightBlockerState == BLOCKER_STATE.SECOND_BALL_WAIT) {
+                    if (rightBlockerTimer.milliseconds() > waitTime) {
+                        blockerPositionR = R_BLOCKER_DOWN;
+                        blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
+                        rightBlockerEngaged = false;
+                        rightBlockerState = BLOCKER_STATE.IDLE;
+                    }
                 }
-            }
-            /*
-            if (velocityTimer.seconds() > 2) {
-                targetv = Range.clip((((1450.0-1100)/(130-42))*(getRobotToGoalDistance()-42)+1100),900,FAR_OUTTAKE_VELOCITY);
-                velocityTimer.reset();
             }
 
-             */
+            if (leftBlockerEngaged){
+                if (leftBlockerState == BLOCKER_STATE.FIRST_BALL) {
+                    if (leftBlockerTimer.milliseconds() > waitTime) {
+                        blockerPositionL = L_BLOCKER_DOWN;
+                        blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
+                        leftBlockerENGAGEDTimer.reset();
+                        leftBlockerState = BLOCKER_STATE.SECOND_BALL;
+                        intakePower = INTAKE_POWER;
+                    }
+                }
+                else if (leftBlockerState == BLOCKER_STATE.SECOND_BALL) {
+                    if (leftBlockerENGAGEDTimer.milliseconds() > 300) {
+                        blockerPositionL = L_BLOCKER_UP;
+                        blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
+                        leftBlockerTimer.reset();
+                        leftBlockerENGAGEDTimer.reset();
+                        leftBlockerState = BLOCKER_STATE.SECOND_BALL_WAIT;
+                    }
+                } else if (leftBlockerState == BLOCKER_STATE.SECOND_BALL_WAIT) {
+                    if (leftBlockerTimer.milliseconds() > waitTime) {
+                        blockerPositionL = L_BLOCKER_DOWN;
+                        blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
+                        leftBlockerEngaged = false;
+                        leftBlockerState = BLOCKER_STATE.IDLE;
+                    }
+                }
+            }
+
 
             if (autoUpdate) {
                 if (getGoal()) {
