@@ -38,6 +38,7 @@ import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.kP;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -80,7 +81,8 @@ public class newRobotTele extends LinearOpMode {
     double backIntakePower = 0.0;
     double firstIntake = 0.9;
     double secondIntake = 0.6;
-    private Servo blocker;
+//    private Servo blocker;
+    private CRServo intakeServo;
     //    private Servo blockerL;
     double targetOuttakeVelocity = 0.0;
 
@@ -172,8 +174,10 @@ public class newRobotTele extends LinearOpMode {
                 intake1On = false;
             } else if (gamepad1.a){
                 backIntakePower = -1.0;
+                intakeServo.setPower(1);
             } else if (gamepad1.b){
                 backIntakePower = 0.0;
+                intakeServo.setPower(0.0);
             }
 
             if (intake1On && (intake1Vel < 200) && (intake1Timer.seconds() > 0.3)){
@@ -225,6 +229,8 @@ public class newRobotTele extends LinearOpMode {
         backIntake = hardwareMap.get(DcMotor.class,"intake2");
         backIntake.setDirection(DcMotorSimple.Direction.FORWARD);
         backIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        intakeServo = hardwareMap.get(CRServo.class,"intakeServo");
     }
 
     private void initMotorOne(double kP, double kI, double kD, double F, double position) {
