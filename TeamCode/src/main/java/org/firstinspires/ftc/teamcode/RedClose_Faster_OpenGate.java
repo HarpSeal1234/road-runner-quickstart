@@ -18,9 +18,11 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Config
+@Disabled
 @Autonomous(name = "Red Close Fast OPENGATE", group = "Autonomous")
 
 public class RedClose_Faster_OpenGate extends LinearOpMode{

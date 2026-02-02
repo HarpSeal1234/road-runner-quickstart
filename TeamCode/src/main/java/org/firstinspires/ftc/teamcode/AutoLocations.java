@@ -9,9 +9,9 @@ public class AutoLocations {
     public static final double BLUE_CLOSE_FASTER_SPLINE_VELOCITY = 55;
 
 
-    public static final Vector2d BLUE_CLOSE_LEAVE = new Vector2d(-24,-10);
+    public static final Vector2d BLUE_CLOSE_LEAVE = new Vector2d(-27,-5);
     public static final Vector2d BLUE_CLOSE_SPIKE_ONE_START = new Vector2d(-29.0, -15);
-    public static final Vector2d BLUE_CLOSE_SPIKE_TWO_START = new Vector2d(-49, -24);
+    public static final Vector2d BLUE_CLOSE_SPIKE_TWO_START = new Vector2d(-49, -22);
 
     public static final Pose2d RED_BASKET_START = new Pose2d(-39, -63, Math.toRadians(-90));
 

@@ -73,7 +73,9 @@ public class Launcher {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             outtake1.setVelocity(velocity);
+            outtake1.setVelocityPIDFCoefficients(2.8,0,0,16.2);
             outtake2.setVelocity(velocity);
+            outtake2.setVelocityPIDFCoefficients(2.8,0,0,16.2);
             return false;
         }
 

@@ -44,7 +44,7 @@ public class RedFarAuto extends LinearOpMode {
 
         TrajectoryActionBuilder path1 = drive.actionBuilder(initialPose)
                 .setTangent(0.0)
-                .splineToLinearHeading(new Pose2d(new Vector2d(10.0, 2), Math.toRadians(-19.0)), Math.toRadians(0.0))
+                .splineToLinearHeading(new Pose2d(new Vector2d(9.5, 2), Math.toRadians(-19.0)), Math.toRadians(0.0))
                 .waitSeconds(trajectoryWait);
         Action trajectoryActionChosen1 = path1.build();
 //        pivot.farPivot();
@@ -60,7 +60,7 @@ public class RedFarAuto extends LinearOpMode {
 
         TrajectoryActionBuilder toShooterP1 = path2.endTrajectory()
                 .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(9.5, -1.5), Math.toRadians(-25)), Math.toRadians(0.0))
+                .splineToLinearHeading(new Pose2d(new Vector2d(9, -1), Math.toRadians(-25)), Math.toRadians(0.0))
                 .waitSeconds(trajectoryWait);
         Action toShooterA1 = toShooterP1.build();
 
@@ -75,7 +75,7 @@ public class RedFarAuto extends LinearOpMode {
 
         TrajectoryActionBuilder toShooterP2 = path3.endTrajectory()
                 .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(10, -1.5), Math.toRadians(335)), Math.toRadians(0.0))
+                .splineToLinearHeading(new Pose2d(new Vector2d(9.5, -1), Math.toRadians(335)), Math.toRadians(0.0))
                 .waitSeconds(trajectoryWait);
         Action toShooterA2 = toShooterP2.build();
 
@@ -94,7 +94,7 @@ public class RedFarAuto extends LinearOpMode {
         if (aprilTagId == 21) {
             Actions.runBlocking(
                     new SequentialAction(
-                            outtake1.startLauncher(FAR_OUTTAKE_VELOCITY + 170),
+                            outtake1.startLauncher(FAR_OUTTAKE_VELOCITY + 60),
                             trajectoryActionChosen1,
                             blocker.l_Engaged_Speed_Check(),
                             new SleepAction(0.1),
@@ -112,7 +112,7 @@ public class RedFarAuto extends LinearOpMode {
         } else if (aprilTagId == 22) { // PGP
             Actions.runBlocking(
                     new SequentialAction(
-                            outtake1.startLauncher(FAR_OUTTAKE_VELOCITY + 170),
+                            outtake1.startLauncher(FAR_OUTTAKE_VELOCITY + 60),
                             trajectoryActionChosen1,
                             blocker.r_Engaged_Speed_Check(),
                             new SleepAction(0.2),
@@ -128,7 +128,7 @@ public class RedFarAuto extends LinearOpMode {
         } else { //PPG
             Actions.runBlocking(
                     new SequentialAction(
-                            outtake1.startLauncher(FAR_OUTTAKE_VELOCITY + 170),
+                            outtake1.startLauncher(FAR_OUTTAKE_VELOCITY + 60),
                             trajectoryActionChosen1,
                             blocker.r_Engaged_Speed_Check(),
                             new SleepAction(0.2),
@@ -137,7 +137,7 @@ public class RedFarAuto extends LinearOpMode {
                             new SleepAction(0.5),
                             blocker.r_Engaged(),
                             new SleepAction(0.4),
-                            outtake1.startLauncher(FAR_OUTTAKE_VELOCITY + 180),
+                            outtake1.startLauncher(FAR_OUTTAKE_VELOCITY + 60),
                             new ParallelAction(blocker.l_Engaged(), blocker.r_Disengaged()),
                             new SleepAction(0.3),
                             blocker.l_Disengaged(),
@@ -164,7 +164,7 @@ public class RedFarAuto extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         trajectoryActionChosen2,
-                        outtake1.startLauncher(FAR_OUTTAKE_VELOCITY + 40),
+                        outtake1.startLauncher(FAR_OUTTAKE_VELOCITY - 70),
                         intake1.intakeOff(),
                         new SleepAction(0.6),
                         toShooterA1,
@@ -184,7 +184,7 @@ public class RedFarAuto extends LinearOpMode {
                         new SleepAction(0.2),
                         new ParallelAction(blocker.r_Disengaged(), blocker.l_Disengaged()),
                         new SleepAction(0.6),
-                        outtake1.startLauncher(FAR_OUTTAKE_VELOCITY+10),
+                        outtake1.startLauncher(FAR_OUTTAKE_VELOCITY - 100),
                         trajectoryActionChosen3,
                         intake1.intakeOff(),
                         new SleepAction(0.6),
@@ -198,7 +198,7 @@ public class RedFarAuto extends LinearOpMode {
                         blocker.r_Disengaged(),
                         new SleepAction(0.1),
                         blocker.l_Disengaged(),
-                        outtake1.startLauncher(FAR_OUTTAKE_VELOCITY+20),
+                        outtake1.startLauncher(FAR_OUTTAKE_VELOCITY - 100),
                         new SleepAction(0.4),
                         blocker.r_Engaged(),
                         new SleepAction(0.1),

@@ -52,7 +52,7 @@ public class BlueFarAuto extends LinearOpMode {
         TrajectoryActionBuilder path2 = path1.endTrajectory()
                 .fresh()
                 .setTangent(0.0)
-                .splineToLinearHeading(new Pose2d(new Vector2d(23, 20), Math.toRadians(60)), Math.toRadians(0.0))
+                .splineToLinearHeading(new Pose2d(new Vector2d(23, 19), Math.toRadians(60)), Math.toRadians(0.0))
                 .waitSeconds(trajectoryWait)
                 .lineToY(30, new TranslationalVelConstraint(17.0))
                 .waitSeconds(trajectoryWait);
@@ -60,7 +60,7 @@ public class BlueFarAuto extends LinearOpMode {
 
         TrajectoryActionBuilder toShooterP1 = path2.endTrajectory()
                 .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(9, 1.5), Math.toRadians(25)), Math.toRadians(0.0))
+                .splineToLinearHeading(new Pose2d(new Vector2d(9, 1.5), Math.toRadians(24)), Math.toRadians(0.0))
                 .waitSeconds(trajectoryWait);
         Action toShooterA1 = toShooterP1.build();
 
@@ -75,7 +75,7 @@ public class BlueFarAuto extends LinearOpMode {
 
         TrajectoryActionBuilder toShooterP2 = path3.endTrajectory()
                 .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(9, 1.5), Math.toRadians(-335)), Math.toRadians(0.0))
+                .splineToLinearHeading(new Pose2d(new Vector2d(9, 1.5), Math.toRadians(-336)), Math.toRadians(0.0))
                 .waitSeconds(trajectoryWait);
         Action toShooterA2 = toShooterP2.build();
 
@@ -94,7 +94,7 @@ public class BlueFarAuto extends LinearOpMode {
         if (aprilTagId == 21) {
             Actions.runBlocking(
                     new SequentialAction(
-                            outtake1.startLauncher(FAR_OUTTAKE_VELOCITY + 170),
+                            outtake1.startLauncher(FAR_OUTTAKE_VELOCITY + 60),
                             trajectoryActionChosen1,
                             blocker.l_Engaged_Speed_Check(),
                             new SleepAction(0.1),
@@ -112,7 +112,7 @@ public class BlueFarAuto extends LinearOpMode {
         } else if (aprilTagId == 22) { // PGP
             Actions.runBlocking(
                     new SequentialAction(
-                            outtake1.startLauncher(FAR_OUTTAKE_VELOCITY + 170),
+                            outtake1.startLauncher(FAR_OUTTAKE_VELOCITY + 60),
                             trajectoryActionChosen1,
                             blocker.r_Engaged_Speed_Check(),
                             new SleepAction(0.2),
@@ -128,7 +128,7 @@ public class BlueFarAuto extends LinearOpMode {
         } else { //PPG
             Actions.runBlocking(
                     new SequentialAction(
-                            outtake1.startLauncher(FAR_OUTTAKE_VELOCITY + 170),
+                            outtake1.startLauncher(FAR_OUTTAKE_VELOCITY + 60),
                             trajectoryActionChosen1,
                             blocker.r_Engaged_Speed_Check(),
                             new SleepAction(0.2),
@@ -163,7 +163,7 @@ public class BlueFarAuto extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         trajectoryActionChosen2,
-                        outtake1.startLauncher(FAR_OUTTAKE_VELOCITY + 40),
+                        outtake1.startLauncher(FAR_OUTTAKE_VELOCITY - 70),
                         intake1.intakeOff(),
                         new SleepAction(0.6),
                         toShooterA1,
@@ -183,7 +183,7 @@ public class BlueFarAuto extends LinearOpMode {
                         new SleepAction(0.2),
                         new ParallelAction(blocker.r_Disengaged(), blocker.l_Disengaged()),
                         new SleepAction(0.6),
-                        outtake1.startLauncher(FAR_OUTTAKE_VELOCITY+10),
+                        outtake1.startLauncher(FAR_OUTTAKE_VELOCITY - 100),
                         trajectoryActionChosen3,
                         intake1.intakeOff(),
                         new SleepAction(0.6),
@@ -197,7 +197,7 @@ public class BlueFarAuto extends LinearOpMode {
                         blocker.r_Disengaged(),
                         new SleepAction(0.1),
                         blocker.l_Disengaged(),
-                        outtake1.startLauncher(FAR_OUTTAKE_VELOCITY+20),
+                        outtake1.startLauncher(FAR_OUTTAKE_VELOCITY),
                         new SleepAction(0.4),
                         blocker.r_Engaged(),
                         new SleepAction(0.1),

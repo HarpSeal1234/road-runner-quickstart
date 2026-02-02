@@ -23,18 +23,16 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Config
-@Autonomous(name = "Blue Close OPENGATE", group = "Autonomous")
-@Disabled
+@Autonomous(name = "new Blue Close Open Gate 1X", group = "Autonomous")
 
-public class BlueClose_Faster_OpenGate extends LinearOpMode{
+public class NoCameraBlueClose_OpenGate extends LinearOpMode{
     private static final boolean USE_WEBCAM = true;
 
     public MecanumDrive drive ;
-     private double fTrajectoryWait = 0.04;
+    private double fTrajectoryWait = 0.04;
 
     public double shootYpos = -35;
     public void reportPosition(){
@@ -42,7 +40,7 @@ public class BlueClose_Faster_OpenGate extends LinearOpMode{
         telemetry.update();
     }
     public void runOpMode() {
-        Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(0));
+        Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(45));
         drive = new MecanumDrive(hardwareMap, initialPose);
         AprilTagDetector aprilTagDetector = new AprilTagDetector(hardwareMap);
         Intake intake1 = new Intake(hardwareMap);
@@ -56,7 +54,7 @@ public class BlueClose_Faster_OpenGate extends LinearOpMode{
         // DRIVE TO POSITION
         TrajectoryActionBuilder path1 = drive.actionBuilder(initialPose)
                 .setTangent(0.0)
-                .splineToConstantHeading(new Vector2d(-24, shootYpos), 0)
+                .splineToConstantHeading(new Vector2d(-24, shootYpos+3), 0)
                 .waitSeconds(fTrajectoryWait);
         Action trajectoryActionChosen1 = path1.build();
 //        pivot.closePivot();
@@ -64,15 +62,15 @@ public class BlueClose_Faster_OpenGate extends LinearOpMode{
         waitForStart();
         if (isStopRequested()) return;
 
-        Actions.runBlocking(new ParallelAction(outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+200), trajectoryActionChosen1,aprilTagDetector.detectAprilTag()));
+        Actions.runBlocking(new ParallelAction(outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+50), trajectoryActionChosen1,aprilTagDetector.detectAprilTag()));
 
-        int aprilTagId = aprilTagDetector.getDesiredTagId();
+//        int aprilTagId = aprilTagDetector.getDesiredTagId();
         int ballNumber;
         BallManager.DecodeBallColor rfColor = ballManager.detectRightFrontColor();
         BallManager.DecodeBallColor rbColor = ballManager.detectRightBackColor();
         BallManager.DecodeBallColor lfColor = ballManager.detectLeftFrontColor();
         BallManager.DecodeBallColor lbColor = ballManager.detectLeftBackColor();
-        telemetry.addData("April Tag Id", aprilTagId);
+//        telemetry.addData("April Tag Id", aprilTagId);
         telemetry.addData("rf", rfColor);
         telemetry.addData("rb", rbColor);
         telemetry.addData("lf", lfColor);
@@ -82,15 +80,18 @@ public class BlueClose_Faster_OpenGate extends LinearOpMode{
         telemetry.update();
 
         // TURN TO SHOOT
+        /*
         TrajectoryActionBuilder path2 = path1.endTrajectory()
                 .fresh()
                 .turn(Math.toRadians(45));
         Action trajectoryActionChosen2 = path2.build();
+         */
 
         // TRAVEL TO FIRST SPIKE MARK
-        TrajectoryActionBuilder path3 = path2.endTrajectory()
+        TrajectoryActionBuilder path3 = path1.endTrajectory()
                 .fresh()
-                .splineTo(BLUE_CLOSE_SPIKE_ONE_START, Math.toRadians(120))
+//                .splineTo(BLUE_CLOSE_SPIKE_ONE_START, Math.toRadians(120))
+                .splineToLinearHeading(new Pose2d(BLUE_CLOSE_SPIKE_ONE_START,Math.toRadians(120)),0)
                 .waitSeconds(fTrajectoryWait)
                 .lineToY(BLUE_CLOSE_SPIKE_ONE_FINAL_Y, new TranslationalVelConstraint(BLUE_CLOSE_SPIKE_ONE_MIN_VELOCITY))
                 .waitSeconds(fTrajectoryWait);
@@ -100,101 +101,60 @@ public class BlueClose_Faster_OpenGate extends LinearOpMode{
                 .fresh()
                 .splineToLinearHeading(new Pose2d(-45,-5,Math.toRadians(0)),0)
                 .waitSeconds(fTrajectoryWait)
-                .strafeToConstantHeading(new Vector2d(-45,3),new TranslationalVelConstraint(16))
+                .strafeToConstantHeading(new Vector2d(-45,6),new TranslationalVelConstraint(20))
                 .waitSeconds(fTrajectoryWait + 0.1);
         Action openGateAction = openGate.build();
 
         // TRAVEL BACK TO SHOOTER
         TrajectoryActionBuilder toShooter = openGate.endTrajectory()
                 .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(-24, shootYpos+2),Math.toRadians(54)), 0, new TranslationalVelConstraint(BLUE_CLOSE_FASTER_SPLINE_VELOCITY)) // like a z facing towards 90
+                .splineToLinearHeading(new Pose2d(new Vector2d(-24, shootYpos+4),Math.toRadians(45)), 0, new TranslationalVelConstraint(BLUE_CLOSE_FASTER_SPLINE_VELOCITY)) // like a z facing towards 90
                 .waitSeconds(fTrajectoryWait);
         Action trajectoryActionToShooterR1 = toShooter.build();
 
         // TRAVEL TO SECOND SPIKE MARK
         TrajectoryActionBuilder path4 = toShooter.endTrajectory()
                 .fresh()
-                .splineToLinearHeading(new Pose2d(BLUE_CLOSE_SPIKE_TWO_START,Math.toRadians(115)), 0,new TranslationalVelConstraint(BLUE_CLOSE_FASTER_SPLINE_VELOCITY))
+                .splineToLinearHeading(new Pose2d(BLUE_CLOSE_SPIKE_TWO_START,Math.toRadians(114)), 0,new TranslationalVelConstraint(BLUE_CLOSE_FASTER_SPLINE_VELOCITY))
                 .waitSeconds(fTrajectoryWait)
-                .lineToY(BLUE_CLOSE_SPIKE_TWO_FINAL_Y, new TranslationalVelConstraint(BLUE_CLOSE_SPIKE_TWO_MIN_VELOCITY))
+                .lineToY(BLUE_CLOSE_SPIKE_TWO_FINAL_Y+4, new TranslationalVelConstraint(BLUE_CLOSE_SPIKE_TWO_MIN_VELOCITY))
                 .waitSeconds(fTrajectoryWait);
         Action trajectoryActionChosen4 = path4.build();
 
         // TRAVEL BACK TO SHOOTER
         TrajectoryActionBuilder toShooter2 = path4.endTrajectory()
                 .fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(-24, shootYpos),Math.toRadians(57)), 0, new TranslationalVelConstraint(BLUE_CLOSE_FASTER_SPLINE_VELOCITY))
+                .splineToLinearHeading(new Pose2d(new Vector2d(-22, shootYpos),Math.toRadians(48)), 0, new TranslationalVelConstraint(BLUE_CLOSE_FASTER_SPLINE_VELOCITY))
                 .waitSeconds(fTrajectoryWait);
         Action trajectoryActionToShooterR2 = toShooter2.build();
 
         // LEAVE
         TrajectoryActionBuilder leavePath = toShooter2.endTrajectory()
                 .fresh()
-                .splineToConstantHeading(BLUE_CLOSE_LEAVE,0.0,new TranslationalVelConstraint(BLUE_CLOSE_FASTER_SPLINE_VELOCITY+10))
+                .splineToLinearHeading(new Pose2d(BLUE_CLOSE_LEAVE,Math.toRadians(0)),0,new TranslationalVelConstraint(BLUE_CLOSE_FASTER_SPLINE_VELOCITY+10))
+//                .splineToConstantHeading(BLUE_CLOSE_LEAVE,0.0,new TranslationalVelConstraint(BLUE_CLOSE_FASTER_SPLINE_VELOCITY+10))
                 .waitSeconds(fTrajectoryWait);
         Action leave = leavePath.build();
 
         if (isStopRequested()) return;
 
-        if (aprilTagId == 21) { // GPP  PURPLE ON THE RIGHT
-            Actions.runBlocking(
+        Actions.runBlocking(
                     new SequentialAction(
-                            outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY + 90),
-                            trajectoryActionChosen2,
+                            outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY + 70),
+                            intake1.intakeOn(),
                             new SleepAction(0.2),
-                            blocker.l_Engaged(),
+                            new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
                             new SleepAction(0.2),
-                            new ParallelAction(blocker.r_Engaged(), blocker.l_Disengaged(), intake1.intakeOn()), // purple ball #1 end
-                            new SleepAction(0.2),
-                            new ParallelAction(blocker.r_Disengaged()), // green ball #1 end // purple ball #1 start
-                            new SleepAction(0.5),
-                            blocker.r_Engaged(),
-                            new SleepAction(0.2),
-                            blocker.r_Disengaged(),
-                            new SleepAction(1)
+                            new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()), // purple ball #1 end
+                            new SleepAction(0.8),
+                            new ParallelAction(blocker.l_Engaged(), blocker.r_Engaged()), // green ball #1 end // purple ball #1 start
+                            new SleepAction(0.4),
+                            new ParallelAction(blocker.l_Disengaged(), blocker.r_Disengaged()), // purple ball #1 end
+                            new SleepAction(0.3)
                     )
             );
 
-        } else if (aprilTagId == 22) { // PGP
-            Actions.runBlocking(
-                    new SequentialAction(
-                            outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY + 90),
-                            trajectoryActionChosen2,
-                            new SleepAction(0.2),
-                            blocker.r_Engaged(),
-                            new SleepAction(0.3),
-                            new ParallelAction(blocker.r_Disengaged(), blocker.l_Engaged()),
-                            intake1.intakeOn(),
-                            new SleepAction(0.2),
-                            blocker.l_Disengaged(),
-                            new SleepAction(0.3),
-                            blocker.r_Engaged(),
-//                            new ParallelAction(blocker.r_Engaged(), blocker.l_Disengaged()),
-                            new SleepAction(0.2),
-                            blocker.r_Disengaged(),
-                            new SleepAction(1)
-                    )
-            );
-        } else { //PPG
-            Actions.runBlocking(
-                    new SequentialAction(
-                            outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY + 90),
-                            trajectoryActionChosen2,
-                            new SleepAction(0.2),
-                            intake1.intakeOn(),
-                            blocker.r_Engaged(),
-                            new SleepAction(0.2),
-                            blocker.r_Disengaged(),
-                            new SleepAction(0.5),
-                            blocker.r_Engaged(),
-                            new SleepAction(0.2),
-                            new ParallelAction(blocker.l_Engaged(), blocker.r_Disengaged()),
-                            new SleepAction(0.3),
-                            blocker.l_Disengaged(),
-                            new SleepAction(1)
-                    ) // launch 0.2 disengage 0.5 engage 0.2 diengate
-            );
-        }
+
         ballNumber = ballManager.getNumOfBalls();
         if (ballNumber > 0) {
             Actions.runBlocking(
@@ -225,8 +185,10 @@ public class BlueClose_Faster_OpenGate extends LinearOpMode{
         Actions.runBlocking(
                 new SequentialAction(
                         trajectoryActionChosen3,
+                        outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+20),
                         intake1.intakeOff(),
                         openGateAction,
+                        new SleepAction(0.05),
                         trajectoryActionToShooterR1,
                         intake1.intakeOn(),
                         new SleepAction(0.2),
@@ -242,7 +204,7 @@ public class BlueClose_Faster_OpenGate extends LinearOpMode{
 
         Actions.runBlocking(
                 new SequentialAction(
-                        outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+60),
+                        outtake1.startLauncher(CLOSE_OUTTAKE_VELOCITY+30),
                         trajectoryActionChosen4,
                         intake1.intakeOff(),
                         trajectoryActionToShooterR2,
