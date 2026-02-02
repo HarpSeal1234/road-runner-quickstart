@@ -175,13 +175,13 @@ public class Tele extends LinearOpMode {
     double l_frontDistance = 0.0;
     double r_backDistance = 0.0;
     double l_backDistance = 0.0;
-    PIDFCoefficients vel900_pidf = new PIDFCoefficients(2.1,0,0,13.6);
-    PIDFCoefficients vel1000_pidf = new PIDFCoefficients(1.1,0,0,16.1);
-
-    PIDFCoefficients vel1100_pidf = new PIDFCoefficients(2.8,0,0,16.2);
-
-    PIDFCoefficients vel1200_pidf = new PIDFCoefficients(0.3,0,0,15.3);
-    PIDFCoefficients far_pidf = new PIDFCoefficients(1.6,0,0,16.2);
+//    PIDFCoefficients vel900_pidf = new PIDFCoefficients(2.1,0,0,13.6);
+//    PIDFCoefficients vel1000_pidf = new PIDFCoefficients(1.1,0,0,16.1);
+//
+//    PIDFCoefficients vel1100_pidf = new PIDFCoefficients(2.8,0,0,16.2);
+//
+//    PIDFCoefficients vel1200_pidf = new PIDFCoefficients(0.3,0,0,15.3);
+//    PIDFCoefficients far_pidf = new PIDFCoefficients(1.6,0,0,16.2);
 
 
     int waitTime = 250;
@@ -233,8 +233,10 @@ public class Tele extends LinearOpMode {
         float step = 0.001f;
         double outtakeStep = 7.0;
         boolean rightBlockerEngaged = false;
+        boolean rightBlockerEngaged1 = false;
         boolean rightBlockerFirst = false;
         boolean leftBlockerEngaged = false;
+        boolean leftBlockerEngaged1 = false;
         ElapsedTime rightBlockerTimer = new ElapsedTime();
         ElapsedTime rightBlockerENGAGEDTimer = new ElapsedTime();
         ElapsedTime leftBlockerTimer = new ElapsedTime();
@@ -260,7 +262,7 @@ public class Tele extends LinearOpMode {
             double leftBackPower = Range.clip((y - x + rx), -DRIVE_POWER, DRIVE_POWER);
             double rightFrontPower = Range.clip((y - x - rx), -DRIVE_POWER, DRIVE_POWER);
             double rightBackPower = Range.clip((y + x - rx), -DRIVE_POWER, DRIVE_POWER);
-            targetv = Range.clip((((1450.0 - 1100) / (130 - 42)) * (getRobotToGoalDistance() - 42) + 1100), 900, FAR_OUTTAKE_VELOCITY);
+            targetv = Range.clip((((1450.0 - 1100) / (130 - 42)) * (getRobotToGoalDistance() - 42) + 1100), 1000, FAR_OUTTAKE_VELOCITY);
             intake1Vel = intake1.getVelocity();
 
 //            telemetryAprilTag();
@@ -292,11 +294,11 @@ public class Tele extends LinearOpMode {
                 autoUpdate = false;
             } else if (gamepad2.right_bumper) {
                 targetOuttakeVelocity = 1000;
-                outtake1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,vel1000_pidf);
-                outtake2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,vel1000_pidf);
+//                outtake1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,vel1000_pidf);
+//                outtake2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,vel1000_pidf);
                 autoUpdate = false;
             } else if (gamepad2.y) {
-                targetOuttakeVelocity = -200;
+                targetOuttakeVelocity = -600;
             } else if (gamepad2.dpad_right) {
                 targetOuttakeVelocity = 0;
                 autoUpdate = false;
@@ -305,7 +307,7 @@ public class Tele extends LinearOpMode {
                 velocityTimer.reset();
                 patternTimer.reset();
             }
-
+/*
             if ((900 < outtake1.getVelocity()) && (outtake1.getVelocity() < 950)){
                 outtake1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,vel900_pidf);
                 outtake2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,vel900_pidf);
@@ -322,12 +324,13 @@ public class Tele extends LinearOpMode {
                 outtake1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,far_pidf);
                 outtake2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,far_pidf);
             }
+\
 
+ */
             // AVOCADOS
             if (gamepad2.b) {
                 blockerPositionR = R_BLOCKER_UP;
                 blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
-                rightBlockerState = BLOCKER_STATE.FIRST_BALL;
                 rightLaunchStatus = LAUNCH_STATUS.LAUNCHED;
                 if (!rightBlockerEngaged) {
                     rightBlockerEngaged = true;
@@ -336,7 +339,6 @@ public class Tele extends LinearOpMode {
             } else if (gamepad2.x) {
                 blockerPositionL = L_BLOCKER_UP;
                 blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
-                leftBlockerState = BLOCKER_STATE.FIRST_BALL;
                 leftLaunchStatus = LAUNCH_STATUS.LAUNCHED;
                 if (!leftBlockerEngaged) {
                     leftBlockerEngaged = true;
@@ -347,9 +349,6 @@ public class Tele extends LinearOpMode {
                 blockerPositionR = R_BLOCKER_UP;
                 leftLaunchStatus = LAUNCH_STATUS.LAUNCHED;
                 rightLaunchStatus = LAUNCH_STATUS.LAUNCHED;
-                rightBlockerState = BLOCKER_STATE.FIRST_BALL;
-                leftBlockerState = BLOCKER_STATE.FIRST_BALL;
-
                 blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
                 blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
                 if (!leftBlockerEngaged) {
@@ -369,8 +368,18 @@ public class Tele extends LinearOpMode {
             } else if (gamepad2.dpad_left){
                 blockerPositionL = L_BLOCKER_UP;
                 blockerPositionR = R_BLOCKER_UP;
+                rightBlockerState = BLOCKER_STATE.FIRST_BALL;
+                leftBlockerState = BLOCKER_STATE.FIRST_BALL;
                 blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
                 blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
+                if (!rightBlockerEngaged1) {
+                    rightBlockerEngaged1 = true;
+                    rightBlockerTimer.reset();
+                }
+                if (!leftBlockerEngaged1) {
+                    leftBlockerEngaged1 = true;
+                    leftBlockerTimer.reset();
+                }
             }
 
 
@@ -404,7 +413,23 @@ public class Tele extends LinearOpMode {
             }
 
 
-            if (rightBlockerEngaged){
+// BLOCKER TIMERS
+            if (leftBlockerEngaged) {
+                if (leftBlockerTimer.milliseconds() > waitTime) {
+                    blockerPositionL = L_BLOCKER_DOWN;
+                    blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
+                    leftBlockerEngaged = false;
+                }
+            }
+            if (rightBlockerEngaged) {
+                if (rightBlockerTimer.milliseconds() > waitTime) {
+                    blockerPositionR = R_BLOCKER_DOWN;
+                    blockerR.setPosition(Range.clip(blockerPositionR, 0.0, R_BLOCKER_UP));
+                    rightBlockerEngaged = false;
+                }
+            }
+
+            if (rightBlockerEngaged1){
                 if (rightBlockerState == BLOCKER_STATE.FIRST_BALL) {
                     if (rightBlockerTimer.milliseconds() > waitTime) {
                         blockerPositionR = R_BLOCKER_DOWN;
@@ -432,7 +457,7 @@ public class Tele extends LinearOpMode {
                 }
             }
 
-            if (leftBlockerEngaged){
+            if (leftBlockerEngaged1){
                 if (leftBlockerState == BLOCKER_STATE.FIRST_BALL) {
                     if (leftBlockerTimer.milliseconds() > waitTime) {
                         blockerPositionL = L_BLOCKER_DOWN;
@@ -454,7 +479,7 @@ public class Tele extends LinearOpMode {
                     if (leftBlockerTimer.milliseconds() > waitTime) {
                         blockerPositionL = L_BLOCKER_DOWN;
                         blockerL.setPosition(Range.clip(blockerPositionL, 0.0, L_BLOCKER_DOWN));
-                        leftBlockerEngaged = false;
+                        leftBlockerEngaged1 = false;
                         leftBlockerState = BLOCKER_STATE.IDLE;
                     }
                 }
@@ -463,13 +488,13 @@ public class Tele extends LinearOpMode {
 
             if (autoUpdate) {
                 if (getGoal()) {
-                    targetv = Range.clip((((1450.0 - 1100) / (130 - 42)) * (getRobotToGoalDistance() - 42) + 1100), 900, FAR_OUTTAKE_VELOCITY);
+                    targetv = Range.clip((((1450.0 - 1100) / (130 - 42)) * (getRobotToGoalDistance() - 42) + 1100), 1000, FAR_OUTTAKE_VELOCITY);
                     lastTargetV = targetv;
                     velocityTimer.reset();
                 } else if (!getGoal() && (velocityTimer.seconds() > 1)) {
                     targetv = lastTargetV;
                 } else {
-                    targetv = Range.clip((((1450.0 - 1100) / (130 - 42)) * (getRobotToGoalDistance() - 42) + 1100), 900, FAR_OUTTAKE_VELOCITY);
+                    targetv = Range.clip((((1450.0 - 1100) / (130 - 42)) * (getRobotToGoalDistance() - 42) + 1100), 1000, FAR_OUTTAKE_VELOCITY);
                 }
 //                if (velocityTimer.seconds() > 1){
 //                    targetv = Range.clip((((1450.0-1100)/(130-42))*(getRobotToGoalDistance()-42)+1100),900,FAR_OUTTAKE_VELOCITY);
@@ -907,7 +932,7 @@ public class Tele extends LinearOpMode {
         telemetry.addData("Outtake 1 Velocity", outtake1.getVelocity());
         telemetry.addData("Outtake 2 Velocity", outtake2.getVelocity());
 //        telemetry.addData("F", F);
-//        telemetry.addData("kP", kP);
+        telemetry.addData("kP", kP);
 //        telemetry.addData("kI", kI);
 //        telemetry.addData("kD","%.5f", kD);
         telemetryAprilTag();
