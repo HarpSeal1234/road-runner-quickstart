@@ -9,7 +9,7 @@ public class OrcaRoboticsConstants {
     public final static int CLOSE_OUTTAKE_VELOCITY = 1100;
 
     // DRIVE POWER
-    public final static double DRIVE_POWER = 0.92;
+    public final static double DRIVE_POWER = 0.9;
 
     // INTAKE
     public final static double PUSH_POWER = 0.9;
