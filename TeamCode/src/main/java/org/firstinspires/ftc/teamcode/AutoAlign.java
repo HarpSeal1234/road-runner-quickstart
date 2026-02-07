@@ -66,26 +66,27 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="CURRENT TELEOP", group="! Linear OpMode")
-public class newRobotTele extends LinearOpMode {
-//    Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(0));
+@TeleOp(name="auto align blue near", group="! Linear OpMode")
+public class AutoAlign extends LinearOpMode {
+    Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(0));
 
     // Declare OpMode members.
-//    public MecanumDrive drive =  new MecanumDrive(hardwareMap, initialPose);
+    public MecanumDrive drive =  new MecanumDrive(hardwareMap, initialPose);
 
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor rightFront = null;
 
     private DcMotor leftFront = null;
     private DcMotor rightBack = null;
-//    private Limelight3A limelight3A = null;
+    //    private Limelight3A limelight3A = null;
     private DcMotor leftBack = null;
     private DcMotorEx outtake1 = null;
-        private DcMotorEx outtake2 = null;
+    private DcMotorEx outtake2 = null;
     private DcMotorEx intake1 = null;
     private DcMotor intake2 = null;
     double intake1Power = 0.0;
     double intake2Power = 0.0;
+
     enum INTAKE_STATUS {
         INTAKE_STOPPED,
         INTAKE_STARTED,

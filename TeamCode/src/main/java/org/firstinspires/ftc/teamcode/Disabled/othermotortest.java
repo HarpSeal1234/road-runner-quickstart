@@ -27,12 +27,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Disabled;
 
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.CLOSE_OUTTAKE_VELOCITY;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.DRIVE_POWER;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.FAR_OUTTAKE_VELOCITY;
-import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.INTAKE_POWER;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.INTAKE_ZERO_POWER;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.kD;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.kI;

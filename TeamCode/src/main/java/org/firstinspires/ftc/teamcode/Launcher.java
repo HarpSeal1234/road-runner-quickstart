@@ -48,7 +48,7 @@ public class Launcher {
     private double position = 5.0;
     public Launcher(HardwareMap hardwareMap){
         outtake1 = hardwareMap.get(DcMotorEx.class,"outtake1");
-        outtake1.setDirection(DcMotorEx.Direction.FORWARD);
+        outtake1.setDirection(DcMotorEx.Direction.REVERSE);
         outtake1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
         outtake1.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         outtake1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -56,7 +56,7 @@ public class Launcher {
         outtake1.setVelocity(0.0);
 
         outtake2  = hardwareMap.get(DcMotorEx.class, "outtake2");
-        outtake2.setDirection(DcMotorEx.Direction.REVERSE);
+        outtake2.setDirection(DcMotorEx.Direction.FORWARD);
         outtake2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         outtake2.setVelocityPIDFCoefficients(kP, kI, kD, F);
         outtake2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -72,7 +72,9 @@ public class Launcher {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             outtake1.setVelocity(velocity);
+            outtake1.setVelocityPIDFCoefficients(2.3,0,0,14);
             outtake2.setVelocity(velocity);
+            outtake2.setVelocityPIDFCoefficients(2.3,0,0,14);
             return false;
         }
 

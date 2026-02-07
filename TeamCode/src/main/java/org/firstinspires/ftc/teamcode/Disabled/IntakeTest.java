@@ -27,10 +27,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Disabled;
 
-import static org.firstinspires.ftc.teamcode.AutoLocations.BLUE_CLOSE_INITIAL_ANGLE;
-import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.CLOSE_INTAKE_POWER;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.CLOSE_OUTTAKE_VELOCITY;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.DRIVE_POWER;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.FAR_OUTTAKE_VELOCITY;
@@ -38,10 +36,10 @@ import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.kD;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.kI;
 import static org.firstinspires.ftc.teamcode.OrcaRoboticsConstants.kP;
 
-import com.acmerobotics.roadrunner.Pose2d;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -66,33 +64,28 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="CURRENT TELEOP", group="! Linear OpMode")
-public class newRobotTele extends LinearOpMode {
-//    Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(0));
+@TeleOp(name="intake test", group="! Linear OpMode")
+@Disabled
+public class IntakeTest extends LinearOpMode {
 
     // Declare OpMode members.
-//    public MecanumDrive drive =  new MecanumDrive(hardwareMap, initialPose);
-
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor rightFront = null;
 
     private DcMotor leftFront = null;
     private DcMotor rightBack = null;
-//    private Limelight3A limelight3A = null;
     private DcMotor leftBack = null;
     private DcMotorEx outtake1 = null;
         private DcMotorEx outtake2 = null;
-    private DcMotorEx intake1 = null;
-    private DcMotor intake2 = null;
-    double intake1Power = 0.0;
-    double intake2Power = 0.0;
-    enum INTAKE_STATUS {
-        INTAKE_STOPPED,
-        INTAKE_STARTED,
-        INTAKE_NEED_TO_BE_MONITORED,
-        INTAKE_MONITORING,
-        INTAKE_JAMMED
-    }
+    private DcMotorEx frontIntake = null;
+    private DcMotor backIntake = null;
+    double frontIntakePower = 0.0;
+    double backIntakePower = 0.0;
+    double firstIntake = 0.9;
+    double secondIntake = 0.6;
+//    private Servo blocker;
+    private CRServo intakeServo;
+    //    private Servo blockerL;
     double targetOuttakeVelocity = 0.0;
 
     // sensors
@@ -104,22 +97,19 @@ public class newRobotTele extends LinearOpMode {
     // pidf
     private double outtakeZeroPower = 0.0;
     private double motorOneCurrentVelocity = 0.0;
+    private double motorOneTargetVelocity = 1300;
     private double motorOneMaxVelocity = 2800;
     private double F = 32767/motorOneMaxVelocity;
 
     private double position = 5.0;
-    int r_frontHasBall = 0;
-    int l_frontHasBall = 0;
-    int r_backHasBall = 0;
-    int l_backHasBall = 0;
+    double blockPosition = 0.6;
+            ;
     String pattern = "";
 
+    int waitTime = 250;
     boolean intake1On = false;
     double intake1Vel = 0.0;
-    INTAKE_STATUS intakeStatus = INTAKE_STATUS.INTAKE_STOPPED;
     private Servo pivot;
-
-    ElapsedTime intakeTimer = new ElapsedTime();
 
     private static final boolean USE_WEBCAM = true;
     private AprilTagProcessor aprilTag;
@@ -149,7 +139,7 @@ public class newRobotTele extends LinearOpMode {
             double leftBackPower = Range.clip((y - x + rx),-DRIVE_POWER,DRIVE_POWER);
             double rightFrontPower = Range.clip((y - x - rx),-DRIVE_POWER,DRIVE_POWER);
             double rightBackPower = Range.clip((y + x - rx),-DRIVE_POWER,DRIVE_POWER);
-            intake1Vel = intake1.getVelocity();
+            ElapsedTime intake1Timer = new ElapsedTime();
 
             leftFront.setPower(leftFrontPower);
             leftBack.setPower(leftBackPower);
@@ -157,62 +147,46 @@ public class newRobotTele extends LinearOpMode {
             rightBack.setPower(rightBackPower);
 
 
-            // OUTTAKE
+            //controls
             if(gamepad2.left_bumper) {
                 outtake1.setVelocity(FAR_OUTTAKE_VELOCITY);
-                outtake2.setVelocity(FAR_OUTTAKE_VELOCITY);
+//                outtake2.setVelocity(FAR_OUTTAKE_VELOCITY);
             } else if(gamepad2.right_bumper) {
                 outtake1.setVelocity(CLOSE_OUTTAKE_VELOCITY);
-                outtake2.setVelocity(CLOSE_OUTTAKE_VELOCITY);
+//                outtake2.setVelocity(CLOSE_OUTTAKE_VELOCITY);
             } else if (gamepad2.dpad_right) {
                 outtake1.setVelocity(0.0);
-                outtake2.setVelocity(0.0);
+//                outtake2.setVelocity(0.0);
             }
 
             // INTAKE
-            if (gamepad1.right_bumper) {
-                intake1Power = CLOSE_INTAKE_POWER;
-                intakeStatus = INTAKE_STATUS.INTAKE_STARTED;
-                intake2Power = -0.5;
-            } else if (gamepad1.left_bumper) {
-                intake1Power = 0;
-                intake2Power = 0;
-                intakeStatus = INTAKE_STATUS.INTAKE_STOPPED;
-            } else if (gamepad1.dpad_left) {
-                intake1Power = -CLOSE_INTAKE_POWER;
-            } else if (gamepad2.a){
-                intake2Power = 1.0;
-                intake1Power = CLOSE_INTAKE_POWER;
-                intakeStatus = INTAKE_STATUS.INTAKE_STARTED;
-            } else if (gamepad2.b){
-                intake2Power = 0.0;
-                intake1Power = 0;
-                intakeStatus = INTAKE_STATUS.INTAKE_STOPPED;
+            if (gamepad1.dpad_left){
+                frontIntakePower = -0.7;
+            }  else if (gamepad1.right_bumper) {
+                frontIntakePower = 1.0;
+//                intake1Timer.reset();
+//                intake1On = true;
+            } else if (gamepad1.left_bumper){
+                frontIntakePower = 0.0;
+                intake1On = false;
+            } else if (gamepad1.a){
+                backIntakePower = -1.0;
+                intakeServo.setPower(1);
+            } else if (gamepad1.b){
+                backIntakePower = 0.0;
+                intakeServo.setPower(0.0);
             }
 
-            intake1Vel = intake1.getVelocity();
-
-            if (intakeStatus == INTAKE_STATUS.INTAKE_STARTED && intake1Vel > 800) {
-                intakeStatus = INTAKE_STATUS.INTAKE_NEED_TO_BE_MONITORED;
-            }
-            else if (intakeStatus == INTAKE_STATUS.INTAKE_NEED_TO_BE_MONITORED && intake1Vel < 200) {
-                intakeStatus = INTAKE_STATUS.INTAKE_MONITORING;
-                intakeTimer.reset();
-            }
-            else if (intakeStatus == INTAKE_STATUS.INTAKE_MONITORING && intake1Vel < 400 && intakeTimer.milliseconds() > 50) {
-                intakeStatus = INTAKE_STATUS.INTAKE_JAMMED;
-            }
-            else if (intakeStatus == INTAKE_STATUS.INTAKE_JAMMED) {
-                intake1Power = 0;
-                intakeTimer.reset();
-                intakeStatus = INTAKE_STATUS.INTAKE_STOPPED;
+            if (intake1On && (intake1Vel < 200) && (intake1Timer.seconds() > 0.3)){
+                frontIntakePower = 0.0;
+                intake1On = false;
+                intake1Timer.reset();
             }
 
+            intake1Vel = frontIntake.getVelocity();
 
-            intake1Vel = intake1.getVelocity();
-
-            intake1.setPower(intake1Power);
-            intake2.setPower(intake2Power);
+            frontIntake.setPower(frontIntakePower);
+            backIntake.setPower(backIntakePower);
             telemetry();
 
             telemetry.update();
@@ -223,7 +197,6 @@ public class newRobotTele extends LinearOpMode {
         initMotorOne(kP, kI, kD, F, position);
         initMotorTwo(kP, kI, kD, F, position);
         initDriveMotors();
-//        initCamera();
         initIntake();
     }
     public void initDriveMotors(){
@@ -244,19 +217,17 @@ public class newRobotTele extends LinearOpMode {
     }
 
     private void initIntake(){
-        intake1 = hardwareMap.get(DcMotorEx.class,"intake1");
-        intake1.setDirection(DcMotorSimple.Direction.REVERSE);
-        intake1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        intake1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        intake1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontIntake = hardwareMap.get(DcMotorEx.class,"intake1");
+        frontIntake.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontIntake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontIntake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        intake2 = hardwareMap.get(DcMotor.class,"intake2");
-        intake2.setDirection(DcMotorSimple.Direction.REVERSE);
-        intake2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    }
-    private void initCamera(){
-//        limelight3A = hardwareMap.get(Limelight3A.class,"limelight3A");
-//        limelight3A.start();
+        backIntake = hardwareMap.get(DcMotor.class,"intake2");
+        backIntake.setDirection(DcMotorSimple.Direction.FORWARD);
+        backIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        intakeServo = hardwareMap.get(CRServo.class,"intakeServo");
     }
 
     private void initMotorOne(double kP, double kI, double kD, double F, double position) {
@@ -281,11 +252,9 @@ public class newRobotTele extends LinearOpMode {
 
     public void telemetry() {
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Intake Power", "Intake Power: " + intake1Power);
+        telemetry.addData("Intake Power", "Intake Power: " + frontIntakePower);
         telemetry.addData("Target Velocity", targetOuttakeVelocity);
-        telemetry.addData("Intake state", intakeStatus);
-        telemetry.addData("intake velocity", intake1Vel);
-        telemetry.addData("Intake TIMER",intakeTimer.milliseconds());
+        telemetry.addData("Intake Vel", intake1Vel);
         telemetry.addData("Outtake 1 power", outtake1.getPower());
         telemetry.addData("Outtake 2 power", outtake2.getPower());
         telemetry.addData("Outtake 1 Velocity", outtake1.getVelocity());

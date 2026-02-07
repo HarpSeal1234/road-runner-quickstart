@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Pivot;
 
 @Config
-@Disabled
+//@Disabled
 @Autonomous(name = "lineto", group = "Autonomous")
 
 public class lineTo extends LinearOpMode{
@@ -29,20 +29,20 @@ public class lineTo extends LinearOpMode{
 
     public void runOpMode() {
         // instantiate your MecanumDrive at a particular pose.
-        Pose2d initialPose = new Pose2d(0, 0, Math.PI/4);
+        Pose2d initialPose = new Pose2d(-29, -15, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
-        AprilTagDetector aprilTagDetector = new AprilTagDetector(hardwareMap);
-        Intake intake1 = new Intake(hardwareMap);
-        Launcher outtake1 = new Launcher(hardwareMap);
-        Avocado blockerR = new Avocado(hardwareMap);
-        Avocado blockerL = new Avocado(hardwareMap);
-        Pivot pivot = new Pivot(hardwareMap);
+//        AprilTagDetector aprilTagDetector = new AprilTagDetector(hardwareMap);
+//        Intake intake1 = new Intake(hardwareMap);
+//        Launcher outtake1 = new Launcher(hardwareMap);
+//        Avocado blockerR = new Avocado(hardwareMap);
+//        Avocado blockerL = new Avocado(hardwareMap);
+//        Pivot pivot = new Pivot(hardwareMap);
 
 
         int visionOutputPosition = 1;
 
         TrajectoryActionBuilder path1 = drive.actionBuilder(initialPose)
-                        .lineToX(48);
+                        .lineToY(-5);
         waitForStart();
 
         if (isStopRequested()) return;

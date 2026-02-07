@@ -16,8 +16,8 @@ import java.util.Objects;
 @Config
 public final class PinpointLocalizer implements Localizer {
     public static class Params {
-        public double parYTicks =  1335.9392696524; // -1331.3802564104265,-1344.5568808953103,-1341.4497783394065,-1326.3701629644402
-        public double perpXTicks = -2002.4734257565; // -2003.7175517444496,-2002.0063305804115,-2001.3339034912756,-2002.835917209797
+        public double parYTicks =  1964.9710979482; // -1994.8646462976483, -1975.7531006710071, -1951.726529272217, -1938.6886053129351, -1963.8226081872922
+        public double perpXTicks = -3585.4478764019; // -3590.4815001866014, -3630.105226078756, -3570.7459051321125, -3576.131081670856, -3559.7756689410203
     }
 
     public static Params PARAMS = new Params();
@@ -39,7 +39,7 @@ public final class PinpointLocalizer implements Localizer {
 
         // TODO: reverse encoder directions if needed
         initialParDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD; // forward backward
-        initialPerpDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;  // left right
+        initialPerpDirection = GoBildaPinpointDriver.EncoderDirection.REVERSED;  // left right
 
         driver.setEncoderDirections(initialParDirection, initialPerpDirection);
 

@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 @TeleOp
 public class FlywheelTuner extends OpMode {
     public DcMotorEx outtake1;
+    public DcMotorEx outtake2;
     public double highVel = 1500;
     public double lowVel = 1200;
     double targetVel = highVel;
@@ -21,9 +22,15 @@ public class FlywheelTuner extends OpMode {
     public void init(){
         outtake1 = hardwareMap.get(DcMotorEx.class, "outtake1");
         outtake1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        outtake1.setDirection(DcMotorEx.Direction.FORWARD);
+        outtake1.setDirection(DcMotorEx.Direction.REVERSE);
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P,0,0,F);
         outtake1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,pidfCoefficients);
+        telemetry.addLine("Init Complete");
+
+        outtake2 = hardwareMap.get(DcMotorEx.class, "outtake2");
+        outtake2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        outtake2.setDirection(DcMotorEx.Direction.FORWARD);
+        outtake2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,pidfCoefficients);
         telemetry.addLine("Init Complete");
     }
 
